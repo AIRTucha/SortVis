@@ -1,12 +1,7 @@
 "use strict"
 var dataset;
-var comparator;
 var width;
 var height;
-var iColor;
-var jColor;
-var trueColor;
-var falseColor;
 var scale;
 var duration;
 
@@ -14,7 +9,6 @@ var mainColor = "#AAAAAA";
 
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   dataset = randomArray(size);
-  comparator = comp;
   width = w * 0.99;
   height = h * 0.99;
   duration = du;
@@ -23,10 +17,10 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   this.randomArray = randomArray;
   this.drawBarChart = drawBarChart;
   this.trueBarChart = updateBarChart(trueColor, trueColor);
-  this.falseBarChar = updateBarChart(falseColor, falseColor);
+  this.falseBarChart = updateBarChart(falseColor, falseColor);
   this.updateBarChart = updateBarChart(mainColor, mainColor);
-  this.updateBarChartIJ = updateBarChart(iColor, jColor);
-  this.compare = compare;
+  this.indexedBarChart = updateBarChart(iColor, jColor);
+  this.compare = compare(comp);
   this.forArea = forArea;
   this.swap = swap;
   this.moveTo = moveTo;
@@ -56,6 +50,8 @@ function randomArray(sizeOfArray){
 }
           
 function drawBarChart(){
+  d3.select("#barChart").selectAll("rect").remove();
+  
   d3.select("#barChart").selectAll("rect")
     .data(dataset)
     .enter()
@@ -78,8 +74,7 @@ function drawBarChart(){
 }
 
 function updateBarChart(firstColor, secondColor){  
-  return function(fIndex, sIndex){
-    console.log("called");
+  return function(a, b){
     d3.select("#barChart").selectAll("rect")
       .transition()
       .duration(duration)
@@ -94,9 +89,9 @@ function updateBarChart(firstColor, secondColor){
           return scale(d);
       })
       .attr("fill", function(d,i) {
-        if(i == fIndex)
+        if(i == a)
           return firstColor;
-        else if(i == sIndex)
+        else if(i == b)
           return secondColor;
         else 
           return mainColor;
@@ -104,22 +99,75 @@ function updateBarChart(firstColor, secondColor){
   }
 }
 
-function compare(a, b, trueCallback, falseCallback){
-
+function compare(comp){
+  return function (a, b, trueCallback, falseCallback){
+    comp(a, b) ? trueCallback() : falseCallback();
+  }
 }
 
 function forArea(iStart, iFinish, callback){
   
 }
 
-function swap(){
+function swap(a, b){
+  var buffer = dataset[a];
+  dataset[a] = dataset[b];
+  dataset[b] = buffer;
   
-  console.log(dataset);
-
+  d3.select("#barChart").selectAll("rect")
+      .transition()
+      .duration(duration)
+      .attr("x", function(d, i) {
+        if(i == a) 
+          return b * (width / dataset.length);
+        else if(i == b)
+          return a * (width / dataset.length);
+        else 
+          return i * (width / dataset.length);
+      })
+      .attr("y", function(d) {
+          return height - scale(d);
+      })				   
+      .attr("width", (width / dataset.length)*0.9 )
+      .attr("height", function(d) {
+          return scale(d);
+      })
+      .attr("fill", function(d,i) {
+          return mainColor;
+      }).each("end", function(){drawBarChart();});
 }
 
-function moveTo(){
-  
+function moveTo(a, pos){
+    var buffDataset = [];
+    d3.select("#barChart").selectAll("rect")
+      .transition()
+      .duration(duration)
+      .attr("x", function(d, i) {
+        var iCur = i;
+      
+        if(i == a) 
+          iCur = pos ;
+        else if(i > a && i <= pos)
+          iCur -= 1;
+        else if(i < a && i >= pos)
+          iCur += 1;
+        
+        buffDataset[iCur] = d;
+        return iCur * (width / dataset.length);
+      })
+      .attr("y", function(d) {
+          return height - scale(d);
+      })				   
+      .attr("width", (width / dataset.length)*0.9 )
+      .attr("height", function(d) {
+          return scale(d);
+      })
+      .attr("fill", function(d,i) {
+          return mainColor;
+      }).each("end", function(){
+        dataset = buffDataset;
+        drawBarChart();
+      });
 }
 
 	
