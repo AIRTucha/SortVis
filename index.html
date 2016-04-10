@@ -2,180 +2,31 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>Currency Exchange History</title>
+		<title>SortVis</title>
 
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="SortVis.js" charset="utf-8"></script>
 		    
 				<script type="text/javascript">
 window.onload = function(){
-  var width=window.innerWidth;
-  var height=window.innerHeight;
-  //var scaleY = d3.scale.linear()
-  //						.domain([0,100])
-  //						.range([height-height/20,height/20]);  
-  var a = [];
-  console.log("test");
-  a.push
-  for(var i = 0; i < 10; i++)
-    a.push(Math.random()%100);
+  var s = new SortVis(500, 
+                      function(a, b) {return a > b;},
+                      window.innerWidth, 
+                      window.innerHeight, 
+                      500,
+                      "#AA0077", 
+                      "#DD00AA", 
+                      "#00BB00", 
+                      "#BB0000", 
+                      "#AAAAAA")
   
-  createBarChart(width, height, a);
+  s.drawBarChart();
+  s.trueBarChart(40,50);
+  s.falseBarChar(10,50)
+  s.updateBarChartIJ(43,54);
+  s.updateBarChart();
+  
 }
-		
-          
-function createBarChart(width,height,dataset){
-    var scale = d3.scale.linear()
-                .domain([0,1])
-                .range([0, height-height/10]);  
-
-        d3.select("#chart")
-                    .append("svg")
-                    .attr("id","barChart")
-                    .attr("width", width)
-                    .attr("height", height)
-                    .selectAll("*").remove();
-
-        d3.select("#barChart").selectAll("rect")
-               .data(dataset)
-               .enter()
-               .append("rect")
-               .attr("id","element")
-               .attr("x", function(d, i) {
-                    return i * (width / dataset.length);
-               })
-
-               .attr("y", function(d) {
-                    return height - scale(d);
-               })				   
-               .attr("width", width / dataset.length - 5)
-               .attr("height", function(d) {
-                    return scale(d);
-               })
-               .attr("fill", function(d, i) {
-                    return "#000000";
-                });
-                
-//                d3.select("#barChart").selectAll("text")
-//                       .data(dataset)
-//                       .enter()
-//                       .append("text")
-//                       .text(function(d) {
-//                            return (100*d.data[0].distance/d.size).toFixed()+"%";
-//                       })
-//                       .attr("text-anchor", "middle")
-//                       .attr("x", function(d, i) {
-//                            return i * (width / dataset.length) + (width / dataset.length - 5) / 2;
-//                       })
-//                       .attr("y", function(d) {
-//                        return	height-(scale(d.data[0].distance/d.size))+(d.data[0].distance/d.size>0.1?width/20:-width/60);	
-//                       })
-//                        .attr("fill",function(d){return d.data[0].distance/d.size>0.1?"white":d.color;});
-       }
-function updateBarChart(width,height,dataset){
-    var scale = d3.scale.linear()
-                .domain([0,1])
-                .range([0, height-height/10]);    
-    var bars=d3.select("#barChart").selectAll("rect");
-    var texts=d3.select("#barChart").selectAll("text");
-
-        //remove bars
-            bars
-                .data(dataset)
-                .exit()
-                .remove();
-
-        //add bars
-            bars
-               .data(dataset)
-               .enter()
-               .append("rect")
-               .attr("id","element")
-               .attr("x", function(){return width;})
-               .attr("y", function(d) {
-                    return height - scale(d.data[0].distance/d.size);
-               })				   
-               .attr("width", width / dataset.length - 5)
-               .attr("height", function(d) {
-                    return scale(d.data[0].distance/d.size);
-               })
-               .attr("fill", function(d,i) {
-                    return d.color;
-                })
-                .on("mouseover",function(d){
-                    d3.select("body")
-                        .append("div")
-                        .classed("tooltip",true)
-                        .attr("id","tooltip")
-                        .html(d.name+"<br>"
-                              +"Size of shelf: "+d.size+"m"+"<br>"
-                              +"Avaible free space: "+d.data[0].distance+"m"+"<br>"
-                              +"Percent of free space: "+(d.data[0].distance/d.size*100).toFixed()+"%")
-                        .style('top', (d3.event.pageY/3) + 'px')
-                        .style('left', (0.7*d3.event.pageX) + 'px');
-                })
-                .on("mouseout", function() {
-                    d3.selectAll(".tooltip").remove();
-                  });
-
-
-        //update bars
-            d3.select("#barChart").selectAll("rect")
-                .transition()
-                .duration(500)
-                .attr("x", function(d, i) {
-                    return i * (width / dataset.length);
-               })
-               .attr("y", function(d) {
-                    return height - scale(d.data[0].distance/d.size);
-               })				   
-               .attr("width", width / dataset.length - 5)
-               .attr("height", function(d) {
-                    return scale(d.data[0].distance/d.size);
-               })
-               .attr("fill", function(d,i) {
-                    return d.color;
-                });
-
-        //remove lables
-            texts
-               .data(dataset)
-               .exit()
-               .remove();
-
-        //update lables
-            texts
-               .transition()
-               .duration(500)
-               .text(function(d) {
-                    return (100*d.data[0].distance/d.size).toFixed()+"%";
-               })
-               .attr("text-anchor", "middle")
-               .attr("x", function(d, i) {
-                    return i * (width / dataset.length) + (width / dataset.length - 5) / 2;
-               })
-               .attr("y", function(d) {
-                return	height-(scale(d.data[0].distance/d.size))+(d.data[0].distance/d.size>0.1?width/20:-width/60);	
-               })
-                .attr("fill",function(d){return d.data[0].distance/d.size>0.1?"white":d.color;});
-
-        //add text
-            texts
-               .data(dataset)
-               .enter()
-               .append("text")
-                .text(function(d) {
-                    return (100*d.data[0].distance/d.size).toFixed()+"%";
-               })
-               .attr("text-anchor", "middle")
-               .attr("x", function(d, i) {
-                    return i * (width / dataset.length) + (width / dataset.length - 5) / 2;
-               })
-               .attr("y", function(d) {
-                return	height-(scale(d.data[0].distance/d.size))+(d.data[0].distance/d.size>0.1?width/20:-width/60);	
-               })
-                .attr("fill",function(d){return d.data[0].distance/d.size>0.1?"white":d.color;});
-
-    }
 		</script>
 		    
 	</head>
