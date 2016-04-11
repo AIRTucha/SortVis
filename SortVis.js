@@ -1,5 +1,7 @@
 "use strict"
 var dataset;
+var bufferDataset;
+var sortingLog;
 var width;
 var height;
 var scale;
@@ -8,22 +10,37 @@ var duration;
 var mainColor = "#AAAAAA";
 
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
+  var obj = {};
+  
   dataset = randomArray(size);
+  bufferDataset =  dataset.slice(0);
   width = w * 0.99;
   height = h * 0.99;
   duration = du;
   mainColor = mColor;
+  sortingLog = bubbleSort(comp);
+  
+  obj.randomArray = randomArray;
+  obj.drawBarChart = drawBarChart;
 
-  this.randomArray = randomArray;
-  this.drawBarChart = drawBarChart;
-  this.trueBarChart = updateBarChart(trueColor, trueColor);
-  this.falseBarChart = updateBarChart(falseColor, falseColor);
-  this.updateBarChart = updateBarChart(mainColor, mainColor);
-  this.indexedBarChart = updateBarChart(iColor, jColor);
-  this.compare = compare(comp);
-  this.forArea = forArea;
-  this.swap = swap;
-  this.moveTo = moveTo;
+  obj.updateBarChart = updateBarChart(mainColor, mainColor);
+  obj.indexedBarChart = updateBarChart(iColor, jColor);
+  obj.trueBarChart = updateBarChart(trueColor, trueColor);
+  obj.falseBarChart = updateBarChart(falseColor, falseColor);
+  obj.drawSwap = drawSwap;
+  obj.drawMoveTo = drawMoveTo;
+  
+  obj.sortingAnimation = function(){
+    delayFor(du, sortingLog, function(d, callback){
+      obj.indexedBarChart(d.i, d.j, function(){
+        if(d.result)
+        {
+          drawSwap(d.i, d.j);
+        }
+      })
+    });
+  }
+
   
   d3.select("#chart")
             .append("svg")
@@ -36,8 +53,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .domain([0, 1])
             .range([0, height]);
   
-
-  return this;
+  
+  return obj;
 }
 
 function randomArray(sizeOfArray){
@@ -73,7 +90,7 @@ function drawBarChart(){
     });
 }
 
-function updateBarChart(firstColor, secondColor){  
+function updateBarChart(firstColor, secondColor, callback){  
   return function(a, b){
     d3.select("#barChart").selectAll("rect")
       .transition()
@@ -95,21 +112,11 @@ function updateBarChart(firstColor, secondColor){
           return secondColor;
         else 
           return mainColor;
-      });
+      }).each("end", callback);
   }
 }
 
-function compare(comp){
-  return function (a, b, trueCallback, falseCallback){
-    comp(a, b) ? trueCallback() : falseCallback();
-  }
-}
-
-function forArea(iStart, iFinish, callback){
-  
-}
-
-function swap(a, b){
+function drawSwap(a, b){
   var buffer = dataset[a];
   dataset[a] = dataset[b];
   dataset[b] = buffer;
@@ -137,7 +144,7 @@ function swap(a, b){
       }).each("end", function(){drawBarChart();});
 }
 
-function moveTo(a, pos){
+function drawMoveTo(a, pos){
     var buffDataset = [];
     d3.select("#barChart").selectAll("rect")
       .transition()
@@ -170,4 +177,43 @@ function moveTo(a, pos){
       });
 }
 
+function bubbleSort(compare){
+  var sLog = [];
+  
+  for(var i = 0; i < dataset.length; i++)
+    for(var j = 0; j < dataset.length; j++)
+    {
+      var entry = {
+        i : i,
+        j : j,
+        result : true
+      };
+      
+      if(compare(dataset[i],dataset[j]))
+        swap(i, j);
+      else entry.result = false;
+        
+      sLog.push(entry);
+    }
+  
+  dataset = bufferDataset;
+  
+  return sLog;
+}
+
+function swap(a, b){
+  var buffer = dataset[a];
+  dataset[a] = dataset[b];
+  dataset[b] = buffer;
+
+}
+function delayFor(duration, data, callback){
+  callback(data.shift(), function (){
+    if (data.length > 0)
+      setTimeout(function(){delayFor(duration, data, callback)}, duration)
+  }); 
+}
+
+
+module.exports = SortVis;
 	
