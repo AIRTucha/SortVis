@@ -1,3 +1,6 @@
+    
+   
+
 "use strict"
 var dataset;
 var bufferDataset;
@@ -20,28 +23,6 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   mainColor = mColor;
   sortingLog = bubbleSort(comp);
   
-  obj.randomArray = randomArray;
-  obj.drawBarChart = drawBarChart;
-
-  obj.updateBarChart = updateBarChart(mainColor, mainColor);
-  obj.indexedBarChart = updateBarChart(iColor, jColor);
-  obj.trueBarChart = updateBarChart(trueColor, trueColor);
-  obj.falseBarChart = updateBarChart(falseColor, falseColor);
-  obj.drawSwap = drawSwap;
-  obj.drawMoveTo = drawMoveTo;
-  
-  obj.sortingAnimation = function(){
-    delayFor(du, sortingLog, function(d, callback){
-      obj.indexedBarChart(d.i, d.j, function(){
-        if(d.result)
-        {
-          drawSwap(d.i, d.j);
-        }
-      })
-    });
-  }
-
-  
   d3.select("#chart")
             .append("svg")
             .attr("id", "barChart")
@@ -53,9 +34,34 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .domain([0, 1])
             .range([0, height]);
   
+  drawBarChart();
   
-  return obj;
-}
+var updateBarChart = updateBarChart(mainColor, mainColor);
+var indexedBarChart = updateBarChart(iColor, jColor);
+var trueBarChart = updateBarChart(trueColor, trueColor);
+var falseBarChart = updateBarChart(falseColor, falseColor);
+  
+  indexedBarChart(4, 2, null);
+ // reLoop(sortingLog);  
+  
+  obj.sortingAnimation = function(){
+//    delayFor(du, sortingLog, function(d, callback){
+//      obj.indexedBarChart(d.i, d.j, function(){
+//        if(d.result)
+//        {
+//          drawSwap(d.i, d.j, callback);
+//        }
+//      })
+//    });
+    var delayCounter = 0;
+    sortingLog.forEach(function(d, i){
+      obj.indexedBarChart(d.i, d.j, delayCounter++);
+      if(d.result){
+        //obj.trueBarChart(d.i, d.j, delayCounter++);
+        obj.drawSwap(d.i, d.j, delayCounter);
+      }
+    });
+  }
 
 function randomArray(sizeOfArray){
   var a = [];
@@ -90,10 +96,11 @@ function drawBarChart(){
     });
 }
 
-function updateBarChart(firstColor, secondColor, callback){  
-  return function(a, b){
+function updateBarChart(firstColor, secondColor){  
+  return function(a, b, callback){
     d3.select("#barChart").selectAll("rect")
       .transition()
+     // .delay(duration * i)
       .duration(duration)
       .attr("x", function(d, i) {
           return i * (width / dataset.length);
@@ -112,11 +119,13 @@ function updateBarChart(firstColor, secondColor, callback){
           return secondColor;
         else 
           return mainColor;
-      }).each("end", callback);
+      }).each("end", function(){console.log("test")});
   }
 }
 
-function drawSwap(a, b){
+
+
+function drawSwap(a, b, callback){
   var buffer = dataset[a];
   dataset[a] = dataset[b];
   dataset[b] = buffer;
@@ -141,7 +150,10 @@ function drawSwap(a, b){
       })
       .attr("fill", function(d,i) {
           return mainColor;
-      }).each("end", function(){drawBarChart();});
+      }).each("end", function(){
+          drawBarChart();
+          callback();
+      });
 }
 
 function drawMoveTo(a, pos){
@@ -201,19 +213,51 @@ function bubbleSort(compare){
   return sLog;
 }
 
+//function bubbleSort(compare){
+//  var sLog = [];
+//  
+//  for(var i = 0; i < dataset.length; i++)
+//    for(var j = 0; j < dataset.length; j++)
+//    { 
+//      sLog.push(function(cb){indexedBarChart(i, j, cb)});
+//      if(compare(dataset[i],dataset[j]))
+//      {
+//        sLog.push(function(cb){falseBarChart(i, j, cb)});
+//        sLog.push(function(){drawSwap(i, j)});
+//        swap(i, j);
+//      }
+//      else sLog.push(function(cb){trueBarChart(i, j, cb)});
+//        
+//      //sLog.push(entry);
+//    }
+//  
+//  dataset = bufferDataset;
+//  
+//  return sLog;
+//}
+
 function swap(a, b){
   var buffer = dataset[a];
   dataset[a] = dataset[b];
   dataset[b] = buffer;
-
 }
+
+function reLoop(fLog){
+  fLog.shift()(function(){
+    if(fLog.length > 0);
+      reLoop(fLog);
+  });
+}
+
 function delayFor(duration, data, callback){
   callback(data.shift(), function (){
     if (data.length > 0)
       setTimeout(function(){delayFor(duration, data, callback)}, duration)
   }); 
 }
-
+  
+  return obj;
+}
 
 module.exports = SortVis;
 	
