@@ -12,31 +12,10 @@ var mainColor = "#AAAAAA";
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
   
-  var indexedBarChart = updateBarChart(iColor, jColor);
+  //var indexedBarChart = updateBarChart(iColor, jColor);
   var trueBarChart = updateBarChart(trueColor, trueColor);
   var falseBarChart = updateBarChart(falseColor, falseColor);
-  var bubbleSort = function(compare){
-    var sLog = [];
-
-    for(var i = 0; i < dataset.length; i++)
-      for(var j = 0; j < dataset.length; j++)
-      { 
-       sLog.push(wraper(i, j, function(a, b, cb){indexedBarChart(a, b, cb)}));
-        if(compare(dataset[i],dataset[j]))
-        {
-          //sLog.push(wraper(dataset, i, j, function(data, a, b, cb){falseBarChart(a, b, data, cb)}));
-          sLog.push(wraper(i, j, function(a, b, cb){drawSwap(a, b, cb)}));
-          swap(i, j);
-        }
-       // else  sLog.push(wraper(dataset, i, j, function(data, a, b, cb){trueBarChart(a, b, data, cb)}));
-      }
-    
-    sLog.push(wraper(i, j, function(a, b, cb){updateBarChart(mainColor, mainColor)(a, b, cb)}));
-    
-    dataset = bufferDataset;
-
-    return sLog;
-  }
+  var sorting = bubbleSort(updateBarChart(iColor, jColor))
  
   dataset = randomArray(size);
   bufferDataset =  dataset.slice(0);
@@ -44,10 +23,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   height = h * 0.99;
   duration = du;
   mainColor = mColor;
-  sortingLog = bubbleSort(comp);
-  
-//  sortingLog.push(wraper(dataset, function(data, cb){drawSwap(3, 4, data, cb)}));
-//  sortingLog.push(wraper(dataset, function(data, cb){drawSwap(5, 6, data, cb)}));
+  sortingLog = sorting(comp);
   
   d3.select("#chart")
             .append("svg")
@@ -66,9 +42,32 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   
   drawBarChart(function(){});
   
-  
-  reLoop(sortingLog);
   return obj;
+}
+
+function bubbleSort(drawChart){
+  return function(compare){
+    var sLog = [];
+
+    for(var i = 0; i < dataset.length; i++)
+      for(var j = i; j < dataset.length; j++)
+      { 
+       sLog.push(wraper(i, j, function(a, b, cb){drawChart(a, b, cb)}));
+        if(compare(dataset[i],dataset[j]))
+        {
+          //sLog.push(wraper(dataset, i, j, function(data, a, b, cb){falseBarChart(a, b, data, cb)}));
+          sLog.push(wraper(i, j, function(a, b, cb){drawSwap(a, b, cb)}));
+          swap(i, j);
+        }
+       // else  sLog.push(wraper(dataset, i, j, function(data, a, b, cb){trueBarChart(a, b, data, cb)}));
+      }
+    
+    sLog.push(wraper(i, j, function(a, b, cb){updateBarChart(mainColor, mainColor)(a, b, cb)}));
+    
+    dataset = bufferDataset;
+
+    return sLog;
+  }
 }
 
 function randomArray(sizeOfArray){
@@ -182,6 +181,7 @@ function drawMoveTo(a, pos){
 
 function swap(a, b){
   var buffer = dataset[a];
+  
   dataset[a] = dataset[b];
   dataset[b] = buffer;
 }
