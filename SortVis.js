@@ -12,6 +12,30 @@ var mainColor = "#AAAAAA";
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
   
+  var indexedBarChart = updateBarChart(iColor, jColor);
+  var trueBarChart = updateBarChart(trueColor, trueColor);
+  var falseBarChart = updateBarChart(falseColor, falseColor);
+  var bubbleSort = function(compare){
+    var sLog = [];
+
+    for(var i = 0; i < dataset.length; i++)
+      for(var j = 0; j < dataset.length; j++)
+      { 
+       // sLog.push(wraper(dataset, function(data, cb){indexedBarChart(i, j, data, cb)}));
+        if(compare(dataset[i],dataset[j]))
+        {
+        //  sLog.push(wraper(dataset, function(data, cb){falseBarChart(i, j, data, cb)}));
+          sLog.push(wraper(dataset, function(data, cb){drawSwap(i, j, data, cb)}));
+          swap(i, j);
+        }
+     //   else  sLog.push(wraper(dataset, function(data, cb){trueBarChart(i, j, data, cb)}));
+      }
+
+    dataset = bufferDataset;
+
+    return sLog;
+  }
+ 
   dataset = randomArray(size);
   bufferDataset =  dataset.slice(0);
   width = w * 0.99;
@@ -31,35 +55,25 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .domain([0, 1])
             .range([0, height]);
   
-  drawBarChart();
+  obj.sortingAnimation = function(){reLoop(sortingLog)};
   
-//var updateBarChart = updateBarChart(mainColor, mainColor);
-var indexedBarChart = updateBarChart(iColor, jColor);
-var trueBarChart = updateBarChart(trueColor, trueColor);
-var falseBarChart = updateBarChart(falseColor, falseColor);
+  drawBarChart(dataset, function(){});
   
-  updateBarChart(mainColor, mainColor)(4, 2, 5);
- // reLoop(sortingLog);  
-  
-  obj.sortingAnimation = function(){
-//    delayFor(du, sortingLog, function(d, callback){
-//      obj.indexedBarChart(d.i, d.j, function(){
-//        if(d.result)
-//        {
-//          drawSwap(d.i, d.j, callback);
-//        }
-//      })
-//    });
-    var delayCounter = 0;
-    sortingLog.forEach(function(d, i){
-      indexedBarChart(d.i, d.j, delayCounter++);
-      if(d.result){
-        trueBarChart(d.i, d.j, delayCounter++);
-        drawSwap(d.i, d.j, delayCounter++);
-      }
-    });
-  }
-  
+//  trueBarChart(3, 5, dataset, function(){
+//      drawSwap(3, 5, dataset, function(){
+//         falseBarChart(3, 5, dataset, function(){
+//            drawSwap(5, 3, dataset, function(){
+//              drawSwap(3, 4, dataset, function(){
+//                 falseBarChart(3, 5, dataset, function(){
+//                    drawSwap(2, 3, dataset, function(){
+//
+//                    });
+//                });
+//              });
+//            });
+//        });
+//      });
+//  });
   return obj;
 }
 
@@ -72,11 +86,11 @@ function randomArray(sizeOfArray){
   return a;
 }
           
-function drawBarChart(){
+function drawBarChart(data, callback){
   d3.select("#barChart").selectAll("rect").remove();
   
   d3.select("#barChart").selectAll("rect")
-    .data(dataset)
+    .data(data)
     .enter()
     .append("rect")
     .attr("id","element")
@@ -94,24 +108,17 @@ function drawBarChart(){
     .attr("fill", function(d, i) {
         return mainColor;
     });
+  
+    callback();
 }
 
+
 function updateBarChart(firstColor, secondColor){  
-  return function(a, b, i){
+  return function(a, b, data, callback){
     d3.select("#barChart").selectAll("rect")
+      .data(data)
       .transition()
-      .delay(duration * i)
       .duration(duration)
-      .attr("x", function(d, i) {
-          return i * (width / dataset.length);
-      })
-      .attr("y", function(d) {
-          return height - scale(d);
-      })				   
-      .attr("width", (width / dataset.length)*0.9 )
-      .attr("height", function(d) {
-          return scale(d);
-      })
       .attr("fill", function(d,i) {
         if(i == a)
           return firstColor;
@@ -119,18 +126,22 @@ function updateBarChart(firstColor, secondColor){
           return secondColor;
         else 
           return mainColor;
-      });//.each("end", function(){callback()});
+      }).each("end", function(d, i ){
+        if(i == data.length-1) {
+          callback();
+          console.log("up");
+        }
+      });
   }
 }
 
-function drawSwap(a, b, i){
-  var buffer = dataset[a];
-  dataset[a] = dataset[b];
-  dataset[b] = buffer;
+function drawSwap(a, b, data, callback){
+  var buffer = data[a];
+  data[a] = data[b];
+  data[b] = buffer;
   
   d3.select("#barChart").selectAll("rect")
       .transition()
-      .delay(duration * i)
       .duration(duration)
       .attr("x", function(d, i) {
         if(i == a) 
@@ -139,19 +150,16 @@ function drawSwap(a, b, i){
           return a * (width / dataset.length);
         else 
           return i * (width / dataset.length);
-      })
-      .attr("y", function(d) {
-          return height - scale(d);
-      })				   
-      .attr("width", (width / dataset.length)*0.9 )
-      .attr("height", function(d) {
-          return scale(d);
-      })
-      .attr("fill", function(d,i) {
-          return mainColor;
-      }).each("end", function(){
-          drawBarChart();
-        //  callback();
+      })			   
+      .each("end", function(d, i){
+        if(i == data.length - 2) {
+          drawBarChart(data, function(){
+              callback();
+              console.log("swap");
+          });
+        }
+          
+        
       });
 }
 
@@ -188,53 +196,6 @@ function drawMoveTo(a, pos){
       });
 }
 
-function bubbleSort(compare){
-  var sLog = [];
-  
-  for(var i = 0; i < dataset.length; i++)
-    for(var j = 0; j < dataset.length; j++)
-    {
-      var entry = {
-        i : i,
-        j : j,
-        result : true
-      };
-      
-      if(compare(dataset[i],dataset[j]))
-        swap(i, j);
-      else entry.result = false;
-        
-      sLog.push(entry);
-    }
-  
-  dataset = bufferDataset;
-  
-  return sLog;
-}
-
-//function bubbleSort(compare){
-//  var sLog = [];
-//  
-//  for(var i = 0; i < dataset.length; i++)
-//    for(var j = 0; j < dataset.length; j++)
-//    { 
-//      sLog.push(function(cb){indexedBarChart(i, j, cb)});
-//      if(compare(dataset[i],dataset[j]))
-//      {
-//        sLog.push(function(cb){falseBarChart(i, j, cb)});
-//        sLog.push(function(){drawSwap(i, j)});
-//        swap(i, j);
-//      }
-//      else sLog.push(function(cb){trueBarChart(i, j, cb)});
-//        
-//      //sLog.push(entry);
-//    }
-//  
-//  dataset = bufferDataset;
-//  
-//  return sLog;
-//}
-
 function swap(a, b){
   var buffer = dataset[a];
   dataset[a] = dataset[b];
@@ -243,19 +204,18 @@ function swap(a, b){
 
 function reLoop(fLog){
   fLog.shift()(function(){
-    if(fLog.length > 0);
+    if(fLog.length > 0)
       reLoop(fLog);
   });
-}
+} 
 
-function delayFor(duration, data, callback){
-  callback(data.shift(), function (){
-    if (data.length > 0)
-      setTimeout(function(){delayFor(duration, data, callback)}, duration)
-  }); 
-}
+function wraper(item, callback){
+  var local = item;
   
-
+  return function(cb) {
+    return callback(local, cb)
+  };
+}
 
 module.exports = SortVis;
 	
