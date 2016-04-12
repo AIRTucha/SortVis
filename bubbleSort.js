@@ -12,7 +12,7 @@ var SortVis = require('./SortVis');
                       "#BB0000", 
                       "#AAAAAA")
   
-  
+  s.sortingAnimation();
 //  
 //  setTimeout(function(){s.moveTo(7, 4);}, 1000);
 //  setTimeout(function(){s.indexedBarChart(3,4);}, 2000);

@@ -1,6 +1,3 @@
-    
-   
-
 "use strict"
 var dataset;
 var bufferDataset;
@@ -36,12 +33,12 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   
   drawBarChart();
   
-var updateBarChart = updateBarChart(mainColor, mainColor);
+//var updateBarChart = updateBarChart(mainColor, mainColor);
 var indexedBarChart = updateBarChart(iColor, jColor);
 var trueBarChart = updateBarChart(trueColor, trueColor);
 var falseBarChart = updateBarChart(falseColor, falseColor);
   
-  indexedBarChart(4, 2, null);
+  updateBarChart(mainColor, mainColor)(4, 2, 5);
  // reLoop(sortingLog);  
   
   obj.sortingAnimation = function(){
@@ -55,13 +52,16 @@ var falseBarChart = updateBarChart(falseColor, falseColor);
 //    });
     var delayCounter = 0;
     sortingLog.forEach(function(d, i){
-      obj.indexedBarChart(d.i, d.j, delayCounter++);
+      indexedBarChart(d.i, d.j, delayCounter++);
       if(d.result){
-        //obj.trueBarChart(d.i, d.j, delayCounter++);
-        obj.drawSwap(d.i, d.j, delayCounter);
+        trueBarChart(d.i, d.j, delayCounter++);
+        drawSwap(d.i, d.j, delayCounter++);
       }
     });
   }
+  
+  return obj;
+}
 
 function randomArray(sizeOfArray){
   var a = [];
@@ -97,10 +97,10 @@ function drawBarChart(){
 }
 
 function updateBarChart(firstColor, secondColor){  
-  return function(a, b, callback){
+  return function(a, b, i){
     d3.select("#barChart").selectAll("rect")
       .transition()
-     // .delay(duration * i)
+      .delay(duration * i)
       .duration(duration)
       .attr("x", function(d, i) {
           return i * (width / dataset.length);
@@ -119,19 +119,18 @@ function updateBarChart(firstColor, secondColor){
           return secondColor;
         else 
           return mainColor;
-      }).each("end", function(){console.log("test")});
+      });//.each("end", function(){callback()});
   }
 }
 
-
-
-function drawSwap(a, b, callback){
+function drawSwap(a, b, i){
   var buffer = dataset[a];
   dataset[a] = dataset[b];
   dataset[b] = buffer;
   
   d3.select("#barChart").selectAll("rect")
       .transition()
+      .delay(duration * i)
       .duration(duration)
       .attr("x", function(d, i) {
         if(i == a) 
@@ -152,7 +151,7 @@ function drawSwap(a, b, callback){
           return mainColor;
       }).each("end", function(){
           drawBarChart();
-          callback();
+        //  callback();
       });
 }
 
@@ -256,8 +255,7 @@ function delayFor(duration, data, callback){
   }); 
 }
   
-  return obj;
-}
+
 
 module.exports = SortVis;
 	
