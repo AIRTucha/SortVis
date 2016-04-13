@@ -12,7 +12,7 @@ var mainColor = "#AAAAAA";
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
   
-  //var indexedBarChart = updateBarChart(iColor, jColor);
+  var indexedBarChart = updateBarChart(iColor, jColor);
   var trueBarChart = updateBarChart(trueColor, trueColor);
   var falseBarChart = updateBarChart(falseColor, falseColor);
   var sorting = bubbleSort(updateBarChart(iColor, jColor))
@@ -38,7 +38,18 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   
   obj.sortingAnimation = function(){reLoop(sortingLog)};
   
+  obj.call = function(i){
+    sortingLog[i](function(a, b){drawBarChart(a, b);});
+  }
+  obj.setD = function(i){
+    var d = duration;
+    
+    duration = i;
+    
+    return d;
   
+  }
+  obj.logSize = sortingLog.length;
   
   drawBarChart(function(){});
   
@@ -90,7 +101,6 @@ function drawBarChart(){
     .attr("x", function(d, i) {
         return i * (width / dataset.length);
     })
-
     .attr("y", function(d, i) {
         return height - scale(d);
     })				   
@@ -103,22 +113,52 @@ function drawBarChart(){
     });
 }
 
+function drawBarChart(a, b){
+  d3.select("#barChart").selectAll("rect").remove();
+  
+  d3.select("#barChart").selectAll("rect")
+    .data(dataset)
+    .enter()
+    .append("rect")
+    .attr("id","element")
+    .attr("x", function(d, i) {
+        return i * (width / dataset.length);
+    })
+    .attr("y", function(d, i) {
+        return height - scale(d);
+    })				   
+    .attr("width", (width / dataset.length)*0.9 )
+    .attr("height", function(d) {
+        return scale(d);
+    })
+    .attr("fill", function(d, i) {
+        if(i == a)
+          return  "#AA0077";
+        else if(i == b)
+          return "#DD00AA";
+        else 
+          return mainColor;
+      });
+}
+
 function updateBarChart(firstColor, secondColor){  
   return function(a, b, callback){
     d3.select("#barChart").selectAll("rect")
       .data(dataset)
       .transition()
       .duration(duration)
-      .attr("fill", function(d,i) {
+      .attr("fill", function(d, i) {
         if(i == a)
           return firstColor;
         else if(i == b)
           return secondColor;
         else 
           return mainColor;
-      }).each("end", function(d, i, a){
+      }).each("end", function(d, i){
         if(i == dataset.length-1) {
-          callback();
+          try{
+            callback(a, b);
+          }catch(e){};
         }
       });
   }
@@ -141,7 +181,7 @@ function drawSwap(a, b, callback){
       .each("end", function(d, i){
         if(i == dataset.length - 1) {
           drawBarChart();
-          callback();
+          callback(a, b);
         }
       });
 }
@@ -195,7 +235,7 @@ function reLoop(fLog){
 
 function wraper(i, j, callback){
   return function(cb) {
-    return callback(i, j, cb)
+    return callback(i, j, cb);
   };
 }
 
