@@ -2,20 +2,17 @@ var SortVis = require('./SortVis');
 
 (function(namespace) {window.onload = function(){
   var s = new SortVis(10, 
-                      function(a, b) {return a > b;},
+                      function(a, b) {return a < b;},
                       window.innerWidth, 
                       window.innerHeight, 
-                      500,
+                      100,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
                       "#BB0000", 
                       "#AAAAAA")
-  
-  
-//  
-//  setTimeout(function(){s.moveTo(7, 4);}, 1000);
-//  setTimeout(function(){s.indexedBarChart(3,4);}, 2000);
+
+s.sortingAnimation();
 }
 
 //namespace.usctVis = usctVis;
