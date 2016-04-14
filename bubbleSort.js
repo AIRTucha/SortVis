@@ -16,22 +16,32 @@ require('jquery-ui');
                       "#BB0000", 
                       "#AAAAAA")
 
-s.sortingAnimation();
+//s.sortingAnimation();
   
   
   
-//   $('#slyder').slider({
-//        animate: "fast",
-//        range : "min",
-//        min : 0,
-//        max : s.logSize,
-//        values : 0,
-//        slide : function( event, ui ) {
-//        //   var a = s.setD(0);
-//          s.call(ui.value);
-//         // s.setD(a);
-//        }
-//   });
+   $('#slyder').slider({
+        animate: "slow",
+        range : "min",
+        min : 0,
+        max : s.logSize,
+        values : 0,
+        start : function( event, ui ) {
+          s.setStep(ui.value);
+        },
+        stop : function( event, ui ) {
+          s.call(ui.value);
+        }
+   });
+  
+  s.sortingAnimation(function(){
+    
+    var a =  s.getStep();
+    
+    
+    $('#slyder').slider( "option", "value", a );
+  });
+
 }
 
 //namespace.usctVis = usctVis;

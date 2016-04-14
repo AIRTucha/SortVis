@@ -6,11 +6,18 @@ var width;
 var height;
 var scale;
 var duration;
+var step = 0;
 
 var mainColor = "#AAAAAA";
 
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
+  obj.getStep = function(){
+    return step;
+  }
+  obj.setStep = function(s){
+    step = s;
+  }
   
   var indexedBarChart = updateBarChart(iColor, jColor);
   var trueBarChart = updateBarChart(trueColor, trueColor);
@@ -36,11 +43,15 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .domain([0, 1])
             .range([0, height]);
   
-  obj.sortingAnimation = function(){reLoop(sortingLog)};
+  obj.sortingAnimation = function(callback){reLoop(sortingLog.slice(0), callback)};
   
   obj.call = function(i){
-    sortingLog[i](function(a, b){drawBarChart(a, b);});
+    while(i != obj.step){
+      sortingLog[obj.step](function(a, b){drawBarChart(a, b);});
+      obj.step += obj.step < i ? 1 : -1;
+    }
   }
+  
   obj.setD = function(i){
     var d = duration;
     
@@ -49,7 +60,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     return d;
   
   }
-  obj.logSize = sortingLog.length;
+  obj.logSize = sortingLog.length - 1;
   
   drawBarChart(function(){});
   
@@ -226,10 +237,12 @@ function swap(a, b){
   dataset[b] = buffer;
 }
 
-function reLoop(fLog){
+function reLoop(fLog, callback){
+  step++;
+  callback();
   fLog.shift()(function(){
     if(fLog.length > 0)
-      reLoop(fLog);
+      reLoop(fLog, callback);
   });
 } 
 
