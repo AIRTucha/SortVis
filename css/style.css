@@ -59,7 +59,7 @@ text{
 .chartHorizontal{
   position: absolute;
   right: 0px;
-  height: 115vh;
+  height: 100%;
   width: 75%;
 }
 
