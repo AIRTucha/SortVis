@@ -14,7 +14,9 @@ require('jquery-ui');
                       "#DD00AA", 
                       "#00BB00", 
                       "#BB0000", 
-                      "#AAAAAA")
+                      "#AAAAAA");
+  
+  var step = 0;
  
    $('#slyder').slider({
       animate: "slow",
@@ -23,14 +25,10 @@ require('jquery-ui');
       max : s.logSize,
       values : 0,
       start : function( event, ui ) {
-        s.setStep(ui.value);
-//        s.sortingAnimationBack(function(){
-//          var a =  s.getStep();
-//          $('#slyder').slider( "option", "value", a );
-//        });
+          step = ui.value;
       },
       stop : function( event, ui ) {
-        s.intervalAnimation(ui.value);
+        s.intervalAnimation(step, ui.value);
       }
    });
   
