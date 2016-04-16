@@ -26,19 +26,18 @@ require('jquery-ui');
       max : s.logSize,
       values : 0,
       start : function( event, ui ) {
-          step = ui.value;
+         // step = ui.value;
       },
       stop : function( event, ui ) {
-        s.intervalAnimation(step, ui.value);
+       // s.intervalAnimation(step, ui.value);
       }
    });
   
   
-//  s.sortingAnimation(function(){
-//    
-//    var a =  s.getStep();
-//    $('#slyder').slider( "option", "value", a );
-//  });
+  s.forwardAnimation(function(){
+    var a =  s.getStep();
+    $('#slyder').slider( "option", "value", a );
+  });
   
   
 
