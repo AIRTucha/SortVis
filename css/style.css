@@ -2,6 +2,10 @@ body{
   overflow: hidden;
 }
 
+input[type=range] {
+    width: 100%;
+}
+
 .axisY path{
     fill:none;
 }
