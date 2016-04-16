@@ -4,8 +4,6 @@ var $ = require('jquery');
 
 //trun on jq-ui
 require('jquery-ui');
-//touch punch, fix touch problems jq-ui
-require('./touch');
 
 (function(namespace) {window.onload = function(){
   var s = new SortVis(20, 
