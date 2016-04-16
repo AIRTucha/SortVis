@@ -1,7 +1,9 @@
 @import "jquery-ui.min.css";
 
 body{
-  overflow: hidden;
+  font-family : 'Montserrat', sans-serif;
+  font-size : 2vh;
+  overflow-x: hidden;
 }
 
 .axisY path{
@@ -55,20 +57,13 @@ text{
 }
 
 .chartHorizontal{
-  position: absolute;
-  right: 0px;
-  height: 100%;
-  width: 75%;
+  position: relative;
+  width: 99%;
 }
 
 .legendHorizontal{
-    position: fixed;
-    top: "10pt";
-    width: 23%;
-    height: 99%;
-    border-right-style: solid;
-    border-right-width: 1px;
-    border-right-color: gainsboro; 
+  position: relative;
+  width: 100%;
 }
 
 svg {
@@ -133,4 +128,22 @@ background-color: "#DD00AA";
     border-color: gainsboro; 
 }
 
-/**/
+select {
+    font-family : 'Montserrat', sans-serif;
+    font-size : 2vh;
+    padding:3px;
+    margin: 0;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+    background: #f8f8f8;
+    color:#888;
+    border:none;
+    outline:none;
+    display: inline-block;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    cursor:pointer;
+}
+

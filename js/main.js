@@ -1,4 +1,5 @@
 var SortVis = require('./SortVis');
+var b = require('./buttons')
 var $ = require('jquery');
 
 
@@ -8,8 +9,8 @@ require('jquery-ui');
 (function(namespace) {window.onload = function(){
   var s = new SortVis(20, 
                       function(a, b) {return a < b;},
-                      $('#main').width(),
-                      $('#main').height() * 0.94,
+                      $('#main').width() * 0.99,
+                      $(window).height() * 0.85,
                       100,
                       "#AA0077", 
                       "#DD00AA", 
@@ -32,6 +33,27 @@ require('jquery-ui');
         s.intervalAnimation(step, ui.value);
       }
    });
+  
+  
+  b(window.innerHeight*0.04, '#buttons',
+   [
+    function(){
+      
+    },
+    function(){
+      
+    },
+    function(){
+      
+    },
+    function(){
+      
+    },
+    function(){
+      
+    },
+   ]
+  );
   
   
 //  s.forwardAnimation(function(){

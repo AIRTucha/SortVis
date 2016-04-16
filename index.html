@@ -11,12 +11,34 @@
 		    
 	</head>
 	<body>
-      <div id = "gui" class="legendHorizontal">
-      
-      </div>
+
       <div id = "main" class="chartHorizontal">
         <div id = "chart"> </div>
         <div id = "slyder"></div>
+      </div>
+
+      <div id = "gui" class="legendHorizontal">
+        <table> 
+         <td>
+           <div id = 'buttons'></div>
+         </td>
+         <td> 
+             Algorigthm
+              <select id = 'algo'>
+                  <option>Bublesort</option>
+                  <option>Cocktail shaker sort</option>
+                  <option>Insertion sort</option>
+                  <option>Shellsort</option>
+                  <option>Quicksort</option>
+                  <option>Merge sort</option>
+                  <option>Selection sort</option>
+              </select>
+         </td>
+         <td> 
+            Speed
+            <input type = 'range' id = 'speed'>
+         </td>
+        </table>
       </div>
 
 	</body>

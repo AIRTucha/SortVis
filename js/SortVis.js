@@ -108,9 +108,8 @@ function randomArray(sizeOfArray){
 }
           
 function drawBarChart(){
-  d3.select("#barChart").selectAll("rect").remove();
-  
   d3.select("#barChart").selectAll("rect")
+    .remove()
     .data(dataset)
     .enter()
     .append("rect")
