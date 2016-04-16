@@ -35,25 +35,7 @@ require('jquery-ui');
    });
   
   
-  b(window.innerHeight*0.04, '#buttons',
-   [
-    function(){
-      
-    },
-    function(){
-      
-    },
-    function(){
-      
-    },
-    function(){
-      
-    },
-    function(){
-      
-    },
-   ]
-  );
+  b(window.innerHeight*0.04, '#buttons');
   
   
 //  s.forwardAnimation(function(){

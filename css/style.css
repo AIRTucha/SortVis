@@ -77,14 +77,14 @@ svg text {
 
 #legend rect{
     cursor: pointer; 
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
 }
 
-#element{
+.element{
     opacity: 0.7;
 }
 
-#element:hover{
+.element:hover{
     opacity: 1;
 }
 

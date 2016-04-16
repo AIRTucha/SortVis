@@ -113,7 +113,7 @@ function drawBarChart(){
     .data(dataset)
     .enter()
     .append("rect")
-    .attr("id","element")
+    .attr("class","element")
     .attr("x", function(d, i) {
         return i * (width / dataset.length);
     })
@@ -136,7 +136,7 @@ function drawBarChart(a, b){
     .data(dataset)
     .enter()
     .append("rect")
-    .attr("id","element")
+    .attr("class","element")
     .attr("x", function(d, i) {
         return i * (width / dataset.length);
     })
