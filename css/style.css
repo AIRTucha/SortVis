@@ -1,3 +1,5 @@
+@import "jquery-ui.min.css";
+
 body{
   overflow: hidden;
 }
@@ -103,24 +105,30 @@ svg text {
     opacity: 1;
 }
 
-
-
 .ui-slider .ui-slider-handle {
-    cursor: default;
-    height: 3vh;
-    width: 3vh;
+    cursor:grab;
+    height: 2vh;
+    width: 2vh;
     z-index: 2;
     border-radius: 0px;
 }
+
+.ui-slider-handle :hover {
+background-color: "#DD00AA";
+}
+
 .ui-slider-horizontal {
-      
     cursor: default;
     height: 1vh;
     z-index: 2;
     border-radius: 0px;
 }
+
 .ui-slider{
+   pointer-events :all;
   margin: 1vh;
   background : rgba(0, 0, 0, 0);
   border-color: rgba(255, 255, 255, 0.8);
 }
+
+/**/

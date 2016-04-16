@@ -1,6 +1,7 @@
 var SortVis = require('./SortVis');
 var $ = require('jquery');
 
+
 //trun on jq-ui
 require('jquery-ui');
 
@@ -16,7 +17,7 @@ require('jquery-ui');
                       "#BB0000", 
                       "#AAAAAA");
   
-  var step = 0;
+   var step = 0;
  
    $('#slyder').slider({
       animate: "slow",
@@ -32,6 +33,7 @@ require('jquery-ui');
       }
    });
   
+  
 //  s.sortingAnimation(function(){
 //    
 //    var a =  s.getStep();
@@ -43,8 +45,6 @@ require('jquery-ui');
   
 
 }
-
-//namespace.usctVis = usctVis;
 })(window);
 
 
