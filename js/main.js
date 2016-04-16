@@ -20,25 +20,25 @@ require('jquery-ui');
    var step = 0;
  
    $('#slyder').slider({
-      animate: "slow",
+      animate: "fast",
       range : "min",
       min : 0,
       max : s.logSize,
       values : 0,
       start : function( event, ui ) {
-         // step = ui.value;
+          step = ui.value;
       },
       stop : function( event, ui ) {
-       // s.intervalAnimation(step, ui.value);
+        s.intervalAnimation(step, ui.value);
       }
    });
   
   
-  s.forwardAnimation(function(){
-    var a =  s.getStep();
-    $('#slyder').slider( "option", "value", a );
-  });
-  
+//  s.forwardAnimation(function(){
+//    var a =  s.getStep();
+//    $('#slyder').slider( "option", "value", a );
+//  });
+//  
   
 
   
