@@ -1,4 +1,5 @@
 "use strict"
+
 var dataset;
 var bufferDataset;
 var sortingLog;
@@ -6,23 +7,19 @@ var width;
 var height;
 var scale;
 var duration;
-var step = 0;
 
+var step = 0;
 var mainColor = "#AAAAAA";
 
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
-  obj.getStep = function(){
-    return step;
-  }
-  obj.setStep = function(s){
-    step = s;
-  }
   
   var indexedBarChart = updateBarChart(iColor, jColor);
   var trueBarChart = updateBarChart(trueColor, trueColor);
   var falseBarChart = updateBarChart(falseColor, falseColor);
   var sorting = bubbleSort(updateBarChart(iColor, jColor))
+  var forwardLoop =  reLoop(function(a){return a+1;});
+  var backwardLoop =  reLoop(function(a){return a-1;});
  
   dataset = randomArray(size);
   bufferDataset =  dataset.slice(0);
@@ -43,23 +40,32 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .domain([0, 1])
             .range([0, height]);
   
-  obj.sortingAnimation = function(callback){reLoop(sortingLog.slice(0), callback)};
+  obj.forwardAnimation = function(callback){
+    forwardLoop(sortingLog.slice(0), callback);
+  };
   
-  obj.call = function(i){
+  obj.backwardAnimation = function(callback){
+    backwardLoop(sortingLog.slice(0), callback);
+  };
+  
+  obj.intervalAnimation = function(start, end){
     while(i != obj.step){
       sortingLog[obj.step](function(a, b){drawBarChart(a, b);});
       obj.step += obj.step < i ? 1 : -1;
     }
-  }
+  };
   
-  obj.setD = function(i){
-    var d = duration;
-    
-    duration = i;
-    
-    return d;
+  obj.forwardStep = stepAnimation(function(a){return a+1;});
+  obj.backwardStep = stepAnimation(function(a){return a-1;});
+
+  obj.getStep = function(){
+    return step;
+  };
   
-  }
+  obj.setStep = function(s){
+    step = s;
+  };
+  
   obj.logSize = sortingLog.length - 1;
   
   drawBarChart(function(){});
@@ -77,13 +83,10 @@ function bubbleSort(drawChart){
        sLog.push(wraper(i, j, function(a, b, cb){drawChart(a, b, cb)}));
         if(compare(dataset[i],dataset[j]))
         {
-          //sLog.push(wraper(dataset, i, j, function(data, a, b, cb){falseBarChart(a, b, data, cb)}));
           sLog.push(wraper(i, j, function(a, b, cb){drawSwap(a, b, cb)}));
           swap(i, j);
         }
-       // else  sLog.push(wraper(dataset, i, j, function(data, a, b, cb){trueBarChart(a, b, data, cb)}));
       }
-    
     sLog.push(wraper(i, j, function(a, b, cb){updateBarChart(mainColor, mainColor)(a, b, cb)}));
     
     dataset = bufferDataset;
@@ -237,14 +240,25 @@ function swap(a, b){
   dataset[b] = buffer;
 }
 
-function reLoop(fLog, callback){
-  step++;
-  callback();
-  fLog.shift()(function(){
-    if(fLog.length > 0)
-      reLoop(fLog, callback);
-  });
-} 
+function reLoop(foo){
+  return function (fLog, callback){
+    callback();
+    fLog[step](function(){
+      step = foo(step);
+      if(fLog.length > step || step >= 0) 
+        reLoop(foo)(fLog, callback);
+    });
+  } 
+}
+
+function stepAnimation(foo){
+  return function (){
+    step = foo(step);
+    
+    if(fLog.length > sortingLog || step >= 0) 
+      sortingLog[step](function(a, b){drawBarChart(a, b);});
+  }
+}
 
 function wraper(i, j, callback){
   return function(cb) {
