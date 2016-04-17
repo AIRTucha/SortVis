@@ -258,16 +258,13 @@ function stepAnimation(foo){
     console.log(step);
     console.log(sortingLog.length);
     
-    step = foo(step);
+    sortingLog[step](function(a, b){drawBarChart(a, b);});
     
+    step = foo(step);
     if(sortingLog.length-1 < step)
       step = sortingLog.length - 1;
     else if(step < 0)
       step = 0;
-    
-    sortingLog[step](function(a, b){drawBarChart(a, b);});
-     
-
   }
 }
 
