@@ -1,6 +1,6 @@
 var d3 = require('d3')
 
-function buttons(size, container){//, stepBack, stepForward, goBack, goForward, stopReset){
+function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goForward){
   d3.select(container)
             .append("svg")
             .attr("id", "menuButtons")
@@ -8,42 +8,12 @@ function buttons(size, container){//, stepBack, stepForward, goBack, goForward, 
             .attr("height", size);
   size *=0.9;
   
-  goBackButton(size, function(){});
-  stepBackButton(size, function(){});
-  stepForwardButton(size, function(){});
-  goForwardButton(size, function(){});
-  stopButton(size, function(){});
-
-
-}
-
-function stepBackButton(size, callback){
-  var offset = size * 1.7
-  var points = [
-        {"x":offset + size/10,"y":size/2 + size/20},
-        {"x":size+offset,"y":size},
-        {"x":size+offset,"y":size/10}
-  ];
-  
-  d3.select('#menuButtons')
-    .append("polygon")
-    .attr('id', 'backStepButton')
-    .attr('class', 'element')
-    .attr("points",function() { 
-        return points.map(function(d) {
-            return [d.x,d.y].join(",");
-        }).join(" ");
-    })
-    .attr("stroke", "#AAAAAA")
-    .attr("stroke-width", size/10)
-    .attr("fill", "#FFFFFF")
-    .on('click', function(){
-      d3.select('#backStepButton').attr('stroke','#AA0077');
-      
-    })
-    .on("mouseout", function(){
-      d3.select('#backStepButton').attr('stroke','#AAAAAA');
-    });;
+  goBackButton(size, goBack);
+  stepBackButton(size, stepBack);
+   stopButton(size, stopReset);
+  stepForwardButton(size, stepForward);
+  goForwardButton(size, goForward);
+ 
 }
 
 function goBackButton(size, callback){
@@ -56,6 +26,8 @@ function goBackButton(size, callback){
         {"x":size,"y":size/3},
         {"x":size,"y":size/10}
   ];
+  
+  d3.selectAll('#backGoButton').remove();
   
   d3.select('#menuButtons')
     .append("polygon")
@@ -71,10 +43,41 @@ function goBackButton(size, callback){
     .attr("fill", "#FFFFFF")
     .on('click', function(){
       d3.select('#backGoButton').attr('stroke','#AA0077');
-      
+      callback();
     })
     .on("mouseout", function(){
       d3.select('#backGoButton').attr('stroke','#AAAAAA');
+    });;
+}
+
+function stepBackButton(size, callback){
+  var offset = size * 1.7
+  var points = [
+        {"x":offset + size/10,"y":size/2 + size/20},
+        {"x":size+offset,"y":size},
+        {"x":size+offset,"y":size/10}
+  ];
+  
+   d3.selectAll('#backStepButton').remove();
+  
+  d3.select('#menuButtons')
+    .append("polygon")
+    .attr('id', 'backStepButton')
+    .attr('class', 'element')
+    .attr("points",function() { 
+        return points.map(function(d) {
+            return [d.x,d.y].join(",");
+        }).join(" ");
+    })
+    .attr("stroke", "#AAAAAA")
+    .attr("stroke-width", size/10)
+    .attr("fill", "#FFFFFF")
+    .on('click', function(){
+      d3.select('#backStepButton').attr('stroke','#AA0077');
+      callback();
+    })
+    .on("mouseout", function(){
+      d3.select('#backStepButton').attr('stroke','#AAAAAA');
     });;
 }
 
@@ -94,19 +97,15 @@ function stopButton(size, callback){
         {"x":3*size/5 + offset + size/10,"y": size},  
   ];
   
-  var resetPoints = [
-        {"x":offset + size/10,"y": size/10},
-        {"x":size + offset,"y": size/10},
-        {"x":size+offset,"y": size},
-        {"x":offset + size/10,"y": size},
-  ];
+  var backgound = [
+     {"x":offset + size/10,"y": size/10},
+     {"x":offset + size/10,"y": size},  
+     {"x":size + offset,"y": size},
+     {"x":size + offset,"y": size/10},
+    
+  ]
   
-  d3.selectAll('#srButton')
-  .transition()
-  .duration(200)
-  .attr('fill', '#FFFFFF')
-  .attr('stroke', '#FFFFFF')
-  .each('end', d3.selectAll('#srButton').remove());
+  d3.selectAll('#srButton').remove();
   
   
   d3.select('#menuButtons')
@@ -114,8 +113,30 @@ function stopButton(size, callback){
     .attr('id', 'srButton')
     .attr('class', 'element')
     .on('click', function(){
+       callback();
        resetButton(size, callback);
     });
+  
+    d3.select('#srButton')
+    .append("polygon")
+    .attr("points",function() { 
+        return backgound.map(function(d) {
+            return [d.x,d.y].join(",");
+        }).join(" ");
+    })
+    .attr("stroke-width", 0)
+    .attr("fill", "#FFFFFF");
+  
+    d3.select('#srButton')
+    .append("polygon")
+    .attr("points",function() { 
+        return stopPoints1.map(function(d) {
+            return [d.x,d.y].join(",");
+        }).join(" ");
+    })
+    .attr("stroke", "#AAAAAA")
+    .attr("stroke-width", size/10)
+    .attr("fill", "#FFFFFF");  
   
   d3.select('#srButton')
     .append("polygon")
@@ -150,12 +171,7 @@ function resetButton(size, callback){
         {"x":offset + size/10,"y": size},
   ];
   
-  d3.selectAll('#srButton')
-  .transition()
-  .duration(200)
-  .attr('fill', '#FFFFFF')
-  .attr('stroke', '#FFFFFF')
-  .each('end', d3.selectAll('#srButton').remove());
+  d3.selectAll('#srButton').remove();
   
   d3.select('#menuButtons')
     .append("polygon")
@@ -170,6 +186,7 @@ function resetButton(size, callback){
     .attr("stroke-width", size/10)
     .attr("fill", "#AAAAAA")
     .on('click', function(){
+      callback();
       stopButton(size, callback);
     });
 }
@@ -182,6 +199,8 @@ function stepForwardButton(size, callback){
         {"x":offset + size/10,"y":size},
         {"x":offset + size/10,"y":size/10}
   ];
+  
+  d3.selectAll('#forwardStepButton').remove();
   
   d3.select('#menuButtons')
     .append("polygon")
@@ -196,12 +215,13 @@ function stepForwardButton(size, callback){
     .attr("stroke-width", size/10)
     .attr("fill", "#FFFFFF")
     .on('click', function(){
+      callback();
       d3.select('#forwardStepButton').attr('stroke','#AA0077');
       
     })
     .on("mouseout", function(){
       d3.select('#forwardStepButton').attr('stroke','#AAAAAA');
-    });;
+    });
 }
 
 function goForwardButton(size, callback){
@@ -217,6 +237,8 @@ function goForwardButton(size, callback){
         {"x":offset + size*0.5 +size/10,"y":size/10}
   ];
   
+  d3.selectAll('#forwardGoButton').remove();
+  
   d3.select('#menuButtons')
     .append("polygon")
     .attr('id', 'forwardGoButton')
@@ -230,6 +252,7 @@ function goForwardButton(size, callback){
     .attr("stroke-width", size/10)
     .attr("fill", "#FFFFFF")
     .on('click', function(){
+      callback();
       d3.select('#forwardGoButton').attr('stroke','#AA0077');
       
     })
@@ -237,11 +260,5 @@ function goForwardButton(size, callback){
       d3.select('#forwardGoButton').attr('stroke','#AAAAAA');
     });;
 }
-
-
-
-
-
-
 
 module.exports = buttons

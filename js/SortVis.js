@@ -21,8 +21,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   var falseBarChart = updateBarChart(falseColor, falseColor);
   var sorting = bubbleSort(updateBarChart(iColor, jColor))
   var forwardLoop =  reLoop(function(a){return a+1;});
-  var backwardLoop =  reLoop(function(a){return a-1;});
- 
+  var backwardLoop =  reLoop(function(a){return a-1;});  
+  
   dataset = randomArray(size);
   bufferDataset =  dataset.slice(0);
   width = w * 0.99;
@@ -39,7 +39,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .selectAll("*").remove();
   
   scale = d3.scale.linear()
-            .domain([0, 1])
+            .domain([0, dataset.reduce( function(a, b) {return a > b ? a : b;})])
             .range([0, height]);
   
   obj.forwardAnimation = function(callback){
@@ -257,7 +257,7 @@ function stepAnimation(foo){
   return function (){
     step = foo(step);
     
-    if(fLog.length > sortingLog || step >= 0) 
+    if(sortingLog.length > step || step >= 0) 
       sortingLog[step](function(a, b){drawBarChart(a, b);});
   }
 }

@@ -35,7 +35,22 @@ require('jquery-ui');
    });
   
   
-  b(window.innerHeight*0.04, '#buttons');
+  b(window.innerHeight*0.04, '#buttons',
+   function(){
+    s.backwardAnimation(function(){});
+   },
+   function(){
+     s.backwardStep(function(){});
+   },
+   function(){
+     console.log('resetStop');
+   },
+   function(){
+     s.forwardStep(function(){});
+   },
+   function(){
+     s.forwardAnimation(function(){});
+   });
   
   
 //  s.forwardAnimation(function(){
