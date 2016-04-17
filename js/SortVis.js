@@ -244,24 +244,30 @@ function swap(a, b){
 
 function reLoop(foo){
   return function (fLog, callback){
-    console.log(fLog.length);
-    console.log(step);
     callback();
     fLog[step](function(){
       step = foo(step);
-      if(fLog.length-1 > step && step > 0){ 
+      if(fLog.length-1 > step && step > 0)
         reLoop(foo)(fLog, callback);
-      }
     });
   } 
 }
 
 function stepAnimation(foo){
   return function (){
-    if(sortingLog.length > step && step > 0){
-      sortingLog[step](function(a, b){drawBarChart(a, b);});
-      step = foo(step);
-    } 
+    console.log(step);
+    console.log(sortingLog.length);
+    
+    step = foo(step);
+    
+    if(sortingLog.length-1 < step)
+      step = sortingLog.length - 1;
+    else if(step < 0)
+      step = 0;
+    
+    sortingLog[step](function(a, b){drawBarChart(a, b);});
+     
+
   }
 }
 
