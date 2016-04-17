@@ -11,7 +11,7 @@ require('jquery-ui');
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,
-                      200,
+                      0,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
@@ -20,6 +20,8 @@ require('jquery-ui');
   
    var step = 0;
  
+  
+  console.log(s.logSize);
    $('#slyder').slider({
       animate: "fast",
       range : "min",
