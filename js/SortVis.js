@@ -3,7 +3,6 @@
 var d3 = require('d3');
 
 var dataset;
-var bufferDataset;
 var sortingLog;
 var width;
 var height;
@@ -12,6 +11,8 @@ var duration;
 
 var step = 0;
 var mainColor = "#AAAAAA";
+
+var inRun = false;
 
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
@@ -24,7 +25,6 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   var backwardLoop =  reLoop(function(a){return a-1;});  
   
   dataset = randomArray(size);
-  bufferDataset =  dataset.slice(0);
   width = w * 0.99;
   height = h * 0.99;
   duration = du;
@@ -38,22 +38,22 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .attr("height", height)
             .selectAll("*").remove();
   
-  scale = d3.scale.linear()
-            .domain([0, dataset.reduce( function(a, b) {return a > b ? a : b;})])
-            .range([0, height]);
+  scale = getScale(height, dataset.reduce( function(a, b) {return a > b ? a : b;}));
   
   obj.forwardAnimation = function(callback){
+    inRun = true;
     forwardLoop(sortingLog.slice(0), callback);
   };
   
   obj.backwardAnimation = function(callback){
+    inRun = true;
     backwardLoop(sortingLog.slice(0), callback);
   };
   
   obj.intervalAnimation = function(start, end){
     step = start;
-        console.log(step);
-    console.log(end);
+    inRun = false; 
+    
     while(end != step){
       sortingLog[step](function(a, b, data){drawBarChart(data, a, b);});
       step += step < end ? 1 : -1;
@@ -71,9 +71,29 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     step = s;
   };
   
+  obj.start = function(){
+    inRun = true;
+  }
+  
+  obj.stop = function(){
+    inRun = false;
+  }
+  
+  obj.ifRun = function(){
+    return inRun;
+  }
+  
+  obj.reset = function(){
+    dataset = randomArray(size);
+    scale = getScale(height, dataset.reduce( function(a, b) {return a > b ? a : b;}));
+    sortingLog = sorting(comp);
+    resetChart(dataset);
+    step = 0;
+  }
+  
   obj.logSize = sortingLog.length - 1;
   
-  drawBarChart(dataset);
+  startBarChart(dataset);
   
   return obj;
 }
@@ -81,6 +101,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
 function bubbleSort(drawChart){
   return function(compare){
     var sLog = [];
+    var bufferDataset = dataset.slice(0);
 
     for(var i = 0; i < dataset.length; i++)
       for(var j = i; j < dataset.length; j++)
@@ -110,7 +131,44 @@ function randomArray(sizeOfArray){
   
   return a;
 }
-          
+
+function resetChart(data){
+  d3.select("#barChart").selectAll("rect")
+    .transition()
+    .duration(duration)
+    .attr('x', 0).each('end',function(){
+        startBarChart(data);
+  });
+  
+ 
+
+}
+  
+function startBarChart(data){
+  d3.select("#barChart").selectAll("rect")
+    .remove()
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class","element")
+    .attr("x", 0)
+    .attr("y", function(d, i) {
+        return height - scale(d);
+    })				   
+    .attr("width", (width / data.length)*0.9 )
+    .attr("height", function(d) {
+        return scale(d);
+    })
+    .attr("fill", function(d, i) {
+        return mainColor;
+    })
+    .transition()
+    .duration(duration)
+    .attr("x", function(d, i) {
+        return i * (width / data.length);
+    });
+}
+
 function drawBarChart(data){
   d3.select("#barChart").selectAll("rect")
     .remove()
@@ -248,19 +306,22 @@ function swap(a, b){
 
 function reLoop(foo){
   return function (fLog, callback){
-    callback();
-    fLog[step](function(){
-      step = foo(step);
-      if(fLog.length > step && step >= 0)
-        reLoop(foo)(fLog, callback);
-      else step = 0 > step ?  0 : sortingLog.length - 1;
-    });
+    if(inRun){
+      callback();
+      fLog[step](function(){
+        step = foo(step);
+        if(fLog.length > step && step >= 0)
+          reLoop(foo)(fLog, callback);
+        else step = 0 > step ?  0 : sortingLog.length - 1;
+      });
+    }
   } 
 }
 
 function stepAnimation(foo){
   return function (){
     sortingLog[step](function(a, b, data){drawBarChart(data, a, b);});
+    inRun = false;
     
     step = foo(step);
     if(sortingLog.length-1 < step)
@@ -274,6 +335,12 @@ function wraper(i, j, data, callback){
   return function(cb) {
     return callback(i, j, data, cb);
   };
+}
+
+function getScale(h, max){
+  return d3.scale.linear()
+            .domain([0, max])
+            .range([0, h]);
 }
 
 module.exports = SortVis;

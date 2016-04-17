@@ -1,5 +1,5 @@
 var SortVis = require('./SortVis');
-var b = require('./buttons')
+var buttons = require('./buttons')
 var $ = require('jquery');
 
 
@@ -11,7 +11,7 @@ require('jquery-ui');
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,
-                      0,
+                      200,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
@@ -20,8 +20,36 @@ require('jquery-ui');
   
    var step = 0;
  
+   var b= buttons(window.innerHeight*0.04, '#buttons',
+     function(obj){
+      s.backwardAnimation(function(){
+        updataSlider();
+        obj.setStop();
+      });
+     },
+     function(){
+       s.backwardStep(function(){
+       updataSlider(); 
+       });
+     },
+     function(){
+        if(s.ifRun())
+          s.stop();
+        else
+          s.reset();
+     },
+     function(){
+       s.forwardStep(function(){
+       updataSlider();
+       });
+     },
+     function(obj){
+       s.forwardAnimation(function(){
+         updataSlider();
+         obj.setStop();
+       });
+     });
   
-  console.log(s.logSize);
    $('#slyder').slider({
       animate: "fast",
       range : "min",
@@ -33,35 +61,9 @@ require('jquery-ui');
       },
       stop : function( event, ui ) {
         s.intervalAnimation(step, ui.value);
+        b.setReset();
       }
    });
-  
-  
-  b(window.innerHeight*0.04, '#buttons',
-   function(){
-    s.backwardAnimation(function(){
-      updataSlider();
-    });
-   },
-   function(){
-     s.backwardStep(function(){
-      updataSlider(); 
-     });
-   },
-   function(){
-     console.log('resetStop');
-   },
-   function(){
-     s.forwardStep(function(){
-       updataSlider();
-     });
-   },
-   function(){
-     s.forwardAnimation(function(){
-       updataSlider();
-     });
-   });
-  
   
  function updataSlider(){
     $('#slyder').slider( "option", "value", s.getStep());
