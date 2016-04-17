@@ -11,7 +11,7 @@ require('jquery-ui');
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,
-                      100,
+                      10,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
@@ -37,31 +37,34 @@ require('jquery-ui');
   
   b(window.innerHeight*0.04, '#buttons',
    function(){
-    s.backwardAnimation(function(){});
+    s.backwardAnimation(function(){
+      updataSlider();
+    });
    },
    function(){
-     s.backwardStep(function(){});
+     s.backwardStep(function(){
+      updataSlider(); 
+     });
    },
    function(){
      console.log('resetStop');
    },
    function(){
-     s.forwardStep(function(){});
+     s.forwardStep(function(){
+       updataSlider();
+     });
    },
    function(){
-     s.forwardAnimation(function(){});
+     s.forwardAnimation(function(){
+       updataSlider();
+     });
    });
   
   
-//  s.forwardAnimation(function(){
-//    var a =  s.getStep();
-//    $('#slyder').slider( "option", "value", a );
-//  });
-//  
+ function updataSlider(){
+    $('#slyder').slider( "option", "value", s.getStep());
+  }
   
-
-  
-
 }
 })(window);
 
