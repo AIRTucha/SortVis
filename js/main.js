@@ -11,7 +11,7 @@ require('jquery-ui');
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,
-                      10,
+                      200,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
