@@ -24,7 +24,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   var forwardLoop =  reLoop(function(a){return a+1;});
   var backwardLoop =  reLoop(function(a){return a-1;});  
   
-  dataset = randomArray(size);
+  dataset = randomArray(size, mainColor);
   width = w * 0.99;
   height = h * 0.99;
   duration = du;
@@ -38,7 +38,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .attr("height", height)
             .selectAll("*").remove();
   
-  scale = getScale(height, dataset.reduce( function(a, b) {return a > b ? a : b;}));
+  scale = getScale(height, dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}));
   
   obj.forwardAnimation = function(callback){
     inRun = true;
@@ -84,8 +84,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   }
   
   obj.reset = function(){
-    dataset = randomArray(size);
-    scale = getScale(height, dataset.reduce( function(a, b) {return a > b ? a : b;}));
+    dataset = randomArray(size, mainColor);
+    scale = getScale(height, dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}));
     sortingLog = sorting(comp);
     resetChart(dataset);
     step = 0;
@@ -107,10 +107,10 @@ function bubbleSort(drawChart){
       for(var j = i; j < dataset.length; j++)
       { 
        sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
-        if(compare(dataset[i], dataset[j]))
+        if(compare(dataset[i].d, dataset[j].d))
         {
-          swap(i, j);
           sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
+          swap(i, j);
         }
       }
     sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){
@@ -123,11 +123,11 @@ function bubbleSort(drawChart){
   }
 }
 
-function randomArray(sizeOfArray){
+function randomArray(sizeOfArray, color){
   var a = [];
   
   for(var i = 0; i < sizeOfArray; i++)
-    a.push(Math.random()%100);
+    a.push({d : Math.random()%100, c : color});
   
   return a;
 }
@@ -153,14 +153,15 @@ function startBarChart(data){
     .attr("class","element")
     .attr("x", 0)
     .attr("y", function(d, i) {
-        return height - scale(d);
+    console.log(d);
+        return height - scale(d.d);
     })				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
-        return scale(d);
+        return scale(d.d);
     })
     .attr("fill", function(d, i) {
-        return mainColor;
+        return d.c;
     })
     .transition()
     .duration(duration)
@@ -180,18 +181,20 @@ function drawBarChart(data){
         return i * (width / data.length);
     })
     .attr("y", function(d, i) {
-        return height - scale(d);
+        return height - scale(d.d);
     })				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
-        return scale(d);
+        return scale(d.d);
     })
     .attr("fill", function(d, i) {
-        return mainColor;
+        return d.c;
     });
 }
 
 function drawBarChart(data, a, b){
+  
+  
   d3.select("#barChart").selectAll("rect").remove();
   
   d3.select("#barChart").selectAll("rect")
@@ -203,11 +206,11 @@ function drawBarChart(data, a, b){
         return i * (width / data.length);
     })
     .attr("y", function(d, i) {
-        return height - scale(d);
+        return height - scale(d.d);
     })				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
-        return scale(d);
+        return scale(d.d);
     })
     .attr("fill", function(d, i) {
         if(i == a)
@@ -215,23 +218,41 @@ function drawBarChart(data, a, b){
         else if(i == b)
           return "#DD00AA";
         else 
-          return mainColor;
+          return d.c;
       });
 }
 
 function updateBarChart(firstColor, secondColor){  
   return function(a, b, data, callback){
+    
+    d3.select("#barChart").selectAll("rect").remove();
+  
     d3.select("#barChart").selectAll("rect")
-      .data(dataset)
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class","element")
+      .attr("x", function(d, i) {
+          return i * (width / data.length);
+      })
+      .attr("y", function(d, i) {
+          return height - scale(d.d);
+      })				   
+      .attr("width", (width / data.length)*0.9 )
+      .attr("height", function(d) {
+          return scale(d.d);
+      })
+      .attr("fill", function(d){return d.c})
       .transition()
       .duration(duration)
       .attr("fill", function(d, i) {
         if(i == a)
-          return firstColor;
+          d.c = firstColor;
         else if(i == b)
-          return secondColor;
-        else 
-          return mainColor;
+          d.c = secondColor;
+        else d.c = mainColor;
+        
+          return d.c;
       }).each("end", function(d, i){
         if(i == data.length-1) {
           try{
@@ -244,7 +265,7 @@ function updateBarChart(firstColor, secondColor){
 
 function drawSwap(a, b, data, callback){
  // swap(a, b);
-
+  
   d3.select("#barChart").selectAll("rect")
       .transition()
       .duration(duration)
@@ -258,7 +279,6 @@ function drawSwap(a, b, data, callback){
       })			   
       .each("end", function(d, i){
         if(i == data.length - 1) {
-          drawBarChart(data);
           callback(a, b, data);
         }
       });
