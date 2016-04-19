@@ -38,16 +38,18 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
             .attr("height", height)
             .selectAll("*").remove();
   
-  scale = getScale(height, dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}));
+  scale = getScale(height, 
+                   dataset.reduce( function(a, b) {return a.d < b.d ? a : b;}).d,
+                   dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}).d);
   
   obj.forwardAnimation = function(callback){
     inRun = true;
-    forwardLoop(sortingLog.slice(0), callback);
+    forwardLoop(callback);
   };
   
   obj.backwardAnimation = function(callback){
     inRun = true;
-    backwardLoop(sortingLog.slice(0), callback);
+    backwardLoop(callback);
   };
   
   obj.intervalAnimation = function(start, end){
@@ -55,8 +57,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     inRun = false; 
     
     while(end != step){
-      sortingLog[step](function(a, b, data){drawBarChart(data, a, b);});
       step += step < end ? 1 : -1;
+      sortingLog[step](function(a, b, data){drawBarChart(data, a, b);});
     }
   };
   
@@ -114,7 +116,7 @@ function bubbleSort(drawChart){
         }
       }
     sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){
-      updateBarChart(mainColor, mainColor)(a, b, data, cb)
+      updateBarChart(mainColor, mainColor)(a, b, data, drawBarChart(data))
     }));
     
     dataset = bufferDataset;
@@ -139,9 +141,6 @@ function resetChart(data){
     .attr('x', 0).each('end',function(){
         startBarChart(data);
   });
-  
- 
-
 }
   
 function startBarChart(data){
@@ -153,7 +152,6 @@ function startBarChart(data){
     .attr("class","element")
     .attr("x", 0)
     .attr("y", function(d, i) {
-    console.log(d);
         return height - scale(d.d);
     })				   
     .attr("width", (width / data.length)*0.9 )
@@ -171,30 +169,6 @@ function startBarChart(data){
 }
 
 function drawBarChart(data){
-  d3.select("#barChart").selectAll("rect")
-    .remove()
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("class","element")
-    .attr("x", function(d, i) {
-        return i * (width / data.length);
-    })
-    .attr("y", function(d, i) {
-        return height - scale(d.d);
-    })				   
-    .attr("width", (width / data.length)*0.9 )
-    .attr("height", function(d) {
-        return scale(d.d);
-    })
-    .attr("fill", function(d, i) {
-        return d.c;
-    });
-}
-
-function drawBarChart(data, a, b){
-  
-  
   d3.select("#barChart").selectAll("rect").remove();
   
   d3.select("#barChart").selectAll("rect")
@@ -213,14 +187,11 @@ function drawBarChart(data, a, b){
         return scale(d.d);
     })
     .attr("fill", function(d, i) {
-        if(i == a)
-          return  "#AA0077";
-        else if(i == b)
-          return "#DD00AA";
-        else 
-          return d.c;
-      });
+        return d.c;
+    });
 }
+
+
 
 function updateBarChart(firstColor, secondColor){  
   return function(a, b, data, callback){
@@ -264,8 +235,6 @@ function updateBarChart(firstColor, secondColor){
 }
 
 function drawSwap(a, b, data, callback){
- // swap(a, b);
-  
   d3.select("#barChart").selectAll("rect")
       .transition()
       .duration(duration)
@@ -325,29 +294,29 @@ function swap(a, b){
 }
 
 function reLoop(foo){
-  return function (fLog, callback){
+  return function (callback){
     if(inRun){
       callback();
-      fLog[step](function(){
+     
         step = foo(step);
-        if(fLog.length > step && step >= 0)
-          reLoop(foo)(fLog, callback);
-        else step = 0 > step ?  0 : sortingLog.length - 1;
-      });
+        if(step < sortingLog.length && step >= 0)
+          sortingLog[step](function(){ reLoop(foo)(callback); });
+        else 
+          step = 0 > step ?  0 : sortingLog.length - 1;
     }
   } 
 }
 
 function stepAnimation(foo){
   return function (){
-    sortingLog[step](function(a, b, data){drawBarChart(data, a, b);});
     inRun = false;
     
     step = foo(step);
-    if(sortingLog.length-1 < step)
-      step = sortingLog.length - 1;
-    else if(step < 0)
-      step = 0;
+    if(sortingLog.length > step && step >= 0)
+      sortingLog[step](function(a, b, data){drawBarChart(data)});
+    else 
+      step = 0 > step ?  0 : sortingLog.length - 1;
+
   }
 }
 
@@ -357,7 +326,7 @@ function wraper(i, j, data, callback){
   };
 }
 
-function getScale(h, max){
+function getScale(h, min, max){
   return d3.scale.linear()
             .domain([0, max])
             .range([0, h]);
