@@ -7,6 +7,14 @@ var $ = require('jquery');
 require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
+     var b;
+  
+  crateLayout();
+  window.onresize = function(){
+    crateLayout();
+  }
+  
+  
   var s = new SortVis(20, 
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
@@ -20,7 +28,87 @@ require('jquery-ui');
   
    var step = 0;
  
-   var b= buttons(window.innerHeight*0.04, '#buttons',
+
+
+  
+   $('#slyder').slider({
+      animate: "fast",
+      range : "min",
+      min : 0,
+      max : s.logSize,
+      values : 0,
+      start : function( event, ui ) {
+          step = ui.value;
+      },
+      stop : function( event, ui ) {
+        s.intervalAnimation(step, ui.value);
+        b.setReset();
+      }
+   });
+  
+ function updataSlider(){
+    $('#slyder').slider( "option", "value", s.getStep());
+  }
+  
+  function crateLayout(){
+    
+    if(innerHeight < innerWidth)
+  $('#gui').html("<table>\
+         <td>\
+           <div id = 'buttons'></div>\
+         </td>\
+         <td> \
+             Algorigthm\
+              <select id = 'algo'>\
+                  <option>Bublesort</option>\
+                  <option>Cocktail shaker sort</option>\
+                  <option>Insertion sort</option>\
+                  <option>Shellsort</option>\
+                  <option>Quicksort</option>\
+                  <option>Merge sort</option>\
+                  <option>Selection sort</option>\
+              </select>\
+         </td>\
+         <td> \
+            Speed\
+            <input type = 'range' id = 'speed'>\
+         </td>\
+          <td> \
+            Size\
+            <input type = 'number' id = 'size'>\
+         </td>\
+        </table>")
+  else
+    $('#gui').html("<table>\
+<tr>\
+         <td>\
+           <div id = 'buttons'></div>\
+         </td>\
+         <td> \
+             Algorigthm\
+              <select id = 'algo'>\
+                  <option>Bublesort</option>\
+                  <option>Cocktail shaker sort</option>\
+                  <option>Insertion sort</option>\
+                  <option>Shellsort</option>\
+                  <option>Quicksort</option>\
+                  <option>Merge sort</option>\
+                  <option>Selection sort</option>\
+              </select>\
+         </td>\
+</tr>\
+<tr>\
+         <td> \
+            Speed\
+            <input type = 'range' id = 'speed'>\
+         </td>\
+          <td> \
+            Size\
+            <input type = 'number' id = 'size'>\
+         </td>\
+</tr>\
+        </table>")
+  b = buttons(window.innerHeight*0.04, '#buttons',
      function(obj){
       s.backwardAnimation(function(){
         updataSlider();
@@ -49,26 +137,7 @@ require('jquery-ui');
          obj.setStop();
        });
      });
-  
-   $('#slyder').slider({
-      animate: "fast",
-      range : "min",
-      min : 0,
-      max : s.logSize,
-      values : 0,
-      start : function( event, ui ) {
-          step = ui.value;
-      },
-      stop : function( event, ui ) {
-        s.intervalAnimation(step, ui.value);
-        b.setReset();
-      }
-   });
-  
- function updataSlider(){
-    $('#slyder').slider( "option", "value", s.getStep());
   }
-  
 }
 })(window);
 
