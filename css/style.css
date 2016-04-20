@@ -6,6 +6,10 @@ body{
   overflow-x: hidden;
 }
 
+li {
+  padding: 1%;
+  margin: : 1%
+}
 .axisY path{
     fill:none;
 }
