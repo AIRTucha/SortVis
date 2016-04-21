@@ -7,9 +7,9 @@ var $ = require('jquery');
 require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
-  crateLayout();
+  setLayout();
   window.onresize = function(){
-    crateLayout();
+    setLayout();
   }
   
   
@@ -76,7 +76,7 @@ require('jquery-ui');
     $('#slyder').slider( "option", "value", s.getStep());
   }
   
-  function crateLayout(){
+  function setLayout(){
     
     if(innerHeight*1.3 < innerWidth){
       $("#buttons").removeClass().addClass('uk-width-1-4');
