@@ -38,6 +38,8 @@ function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goF
   resetButton(size, obj, stopReset);
   stepForwardButton(size, obj, stepForward);
   goForwardButton(size, obj, goForward);
+  
+  return obj;
 }
 
 function goBackButton(size, obj, callback){

@@ -8,16 +8,12 @@ require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
   setLayout();
-  window.onresize = function(){
-    setLayout();
-  }
-  
-  
+
   var s = new SortVis(20, 
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,
-                      100,
+                      200,
                       "#AA0077", 
                       "#DD00AA", 
                       "#00BB00", 
@@ -44,6 +40,8 @@ require('jquery-ui');
           s.stop();
         else
           s.reset();
+    
+        updataSlider();
      },
      function(){
        s.forwardStep(function(){
@@ -61,23 +59,22 @@ require('jquery-ui');
       animate: "fast",
       range : "min",
       min : 0,
-      max : s.logSize,
+      max : s.getLogSize(),
       values : 0,
-      start : function( event, ui ) {
-          step = ui.value;
-      },
       stop : function( event, ui ) {
-        s.intervalAnimation(step, ui.value);
+        s.intervalAnimation(ui.value);
         b.setReset();
       }
    });
   
+  $('#speed').on('change', function () { s.setDuration(this.value)});
+  $('#sizeSelector').on('change', function () { s.setSize($(this).find('option:selected').val())});
+  
  function updataSlider(){
-    $('#slyder').slider( "option", "value", s.getStep());
+    $('#slyder').slider( "option", "value", s.getStep()).slider( "option", "max", s.getLogSize());
   }
   
   function setLayout(){
-    
     if(innerHeight*1.3 < innerWidth){
       $("#buttons").removeClass().addClass('uk-width-1-4');
       $("#algo").removeClass().addClass('uk-width-1-4');
@@ -90,39 +87,10 @@ require('jquery-ui');
       $("#size").removeClass().addClass('uk-width-1-2')
     }
   }
+  
+  window.onresize = function(){
+    s.resize($('#main').width() * 0.99, $(window).height() * 0.85)
+    setLayout();
+  }
 }
 })(window);
-
-
-
-
-// (function(d3) {
-//			var screenMode= 0.95;
-//	 
-//	 		window.onresize = function(){ location.reload(); }		
-//			
-//			if(window.innerHeight<window.innerWidth){
-//				d3.select("body").append("div").attr("id","legend").classed("legendHorizontal",true);
-//				d3.select("body").append("div").attr("id","chart").classed("chartHorizontal",true);
-//				screenMode= 0.7;
-//			} else {
-//				d3.select("body").append("div").attr("id","legend").classed("legendHorizontal",false);
-//				d3.select("body").append("div").attr("id","chart").classed("chartHorizontal",false);
-//			}
-//	 		d3.json('data',function(e,json){
-//				if(e==null){
-//					json=parseData(json);
-//					
-//					console.log(json);
-//					createLegend(screenMode,json)
-//					createPieChart(json.filter(function(d){return d.enabled}).sort(),screenMode*window.innerWidth/2,
-//								   d3.layout.pie().value(function(d){return d.data[0].distance;}),"pieChar1");
-//					createPieChart(json.filter(function(d){return d.enabled}).sort(),screenMode*window.innerWidth/2,
-//								   d3.layout.pie().value(function(d){return d.size;}),"pieChar2");
-//					createBarChart(screenMode*window.innerWidth,0.95*window.innerHeight,json);
-//					createPlot(screenMode*window.innerWidth,0.95*window.innerHeight,json);
-//				}else 
-//                  alert("Data Request Fail");
-//				});
-//	 			
-// })(window.d3);

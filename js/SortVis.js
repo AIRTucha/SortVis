@@ -8,6 +8,7 @@ var width;
 var height;
 var scale;
 var duration;
+var size;
 
 var step = 0;
 var mainColor = "#AAAAAA";
@@ -53,14 +54,10 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     backwardLoop(callback);
   };
   
-  obj.intervalAnimation = function(start, end){
-    step = start;
+  obj.intervalAnimation = function(end){
+    step = end;
     inRun = false; 
-    
-    while(end != step){
-      step += step < end ? 1 : -1;
-      sortingLog[step](function(a, b, data){drawBarChart(data);});
-    }
+    sortingLog[step](function(a, b, data){drawBarChart(data);});
   };
   
   obj.forwardStep = stepAnimation(function(a){return a+1;});
@@ -96,8 +93,37 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     resetChart(dataset);
     step = 0;
   }
+  obj.setDuration = function(v){
+    duration = v;
+  }
   
-  obj.logSize = sortingLog.length - 1;
+  obj.setSize = function(v){
+    size = v;
+  }
+  
+  obj.getLogSize = function(){
+    return sortingLog.length - 1;
+  }
+  
+  obj.resize = function(w, h) {
+    width = w;
+    height = h;
+    scale = getScale(height, 
+                   dataset.reduce( function(a, b) {return a.d < b.d ? a : b;}).d,
+                   dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}).d
+                  );
+    
+    d3.select('#chart').select('svg').remove();
+    
+    d3.select("#chart")
+      .append("svg")
+      .attr("id", "barChart")
+      .attr("width", width)
+      .attr("height", height)
+      .selectAll("*").remove();
+    
+    drawBarChart(dataset);
+  }
   
   startBarChart(dataset);
   
@@ -172,7 +198,7 @@ function wraper(i, j, data, callback){
 function getScale(h, min, max){
   return d3.scale.linear()
             .domain([0, max])
-            .range([0, h]);
+            .range([0, h*.97]);
 }
 
 function randomArray(sizeOfArray, color){

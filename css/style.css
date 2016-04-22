@@ -89,9 +89,6 @@ input[type=range]:focus::-ms-fill-lower {
 input[type=range]:focus::-ms-fill-upper {
   background: #fdfdfd;
 }
-
-
-
 .uk-width-1-2 {
   padding: 1%;
   margin: : 1%
