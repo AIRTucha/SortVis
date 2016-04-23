@@ -130,21 +130,88 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   return obj;
 }
 
+//function bubbleSort(drawChart){
+//  return function(compare){
+//    var sLog = [];
+//    var bufferDataset = dataset.slice(0);
+//
+//    for(var i = 0; i < dataset.length; i++)
+//      for(var j = i; j < dataset.length; j++)
+//      { 
+//       sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
+//        if(compare(dataset[i].d, dataset[j].d))
+//        {
+//          sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
+//          swap(i, j);
+//        }
+//      }
+//    sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data){
+//      updateBarChart(mainColor, mainColor)(a, b, data, drawBarChart(data))
+//    }));
+//    
+//    dataset = bufferDataset;
+//
+//    return sLog;
+//  }
+//}
+
 function bubbleSort(drawChart){
   return function(compare){
     var sLog = [];
     var bufferDataset = dataset.slice(0);
 
-    for(var i = 0; i < dataset.length; i++)
-      for(var j = i; j < dataset.length; j++)
+    for(var i = 0; i < dataset.length-1; i++)
+      for(var j = 0; j < dataset.length-1-i; j++)
       { 
-       sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
-        if(compare(dataset[i].d, dataset[j].d))
+       sLog.push(wraper(j, j+1, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
+        if(compare(dataset[j].d, dataset[j+1].d))
         {
-          sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
-          swap(i, j);
+          sLog.push(wraper(j, j+1, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
+          swap(j, j+1);
         }
       }
+    sLog.push(wraper(j, j+1, dataset.slice(0), function(a, b, data){
+      updateBarChart(mainColor, mainColor)(a, b, data, drawBarChart(data))
+    }));
+    
+    dataset = bufferDataset;
+
+    return sLog;
+  }
+}
+
+function cocktailSort(drawChart){
+  return function(compare){
+    var sLog = [];
+    var bufferDataset = dataset.slice(0);
+
+    for(var i = 0; i < dataset.length/2; i++)
+    {
+      var swaped = false;
+      for(var j = i; j < dataset.length - i - 1; j++){ 
+       var p1 = j;
+       var p2 = j+1;
+       sLog.push(wraper(p1, p2, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
+        if(compare(dataset[p1].d, dataset[p2].d)){
+          sLog.push(wraper(p1, p2, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
+          swap(p1, p2);
+          swaped = true;
+        }
+      }
+      swaped = false;
+      for(var j = dataset.length - 2 - i; j > 0; j--) { 
+       sLog.push(wraper(j, j-1, dataset.slice(0), function(a, b, data, cb){drawChart(a, b, data, cb)}));
+        if(!compare(dataset[j].d, dataset[j-1].d)) {
+          sLog.push(wraper(j, j-1, dataset.slice(0), function(a, b, data, cb){drawSwap(a, b, data, cb)}));
+          swap(j, j-1);
+          swaped = true;
+        }
+      }
+      
+      if(!swaped)
+        break;
+    }
+    
     sLog.push(wraper(i, j, dataset.slice(0), function(a, b, data){
       updateBarChart(mainColor, mainColor)(a, b, data, drawBarChart(data))
     }));
@@ -152,6 +219,7 @@ function bubbleSort(drawChart){
     dataset = bufferDataset;
 
     return sLog;
+    
   }
 }
 
@@ -166,12 +234,14 @@ function reLoop(foo){
   return function (callback){
     if(inRun){
       callback();
-     
-      step = foo(step);
-      if(step < sortingLog.length && step >= 0)
-        sortingLog[step](function(){ reLoop(foo)(callback); });
-      else 
-        step = 0 > step ?  0 : sortingLog.length - 1;
+      sortingLog[step](function(){ 
+        step = foo(step);
+        if(step < sortingLog.length && step >= 0)
+          reLoop(foo)(callback); 
+        else 
+          step = 0 > step ?  0 : sortingLog.length - 1;
+      });
+
     }
   } 
 }
