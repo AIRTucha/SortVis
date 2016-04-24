@@ -56,7 +56,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   obj.intervalAnimation = function(end){
     step = end;
     inRun = false; 
-    sortingLog[step](function(a, b, data){drawBarChart(data);});
+    sortingLog[step](function(a, b, p,  data){drawBarChart(data);});
   };
   
   obj.forwardStep = stepAnimation(function(a){return a+1;});
