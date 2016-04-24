@@ -70,6 +70,11 @@ require('jquery-ui');
   $('#speed').on('change', function () { s.setDuration(this.value)});
   $('#sizeSelector').on('change', function () { s.setSize($(this).find('option:selected').val())});
   
+  $('#algo').on('change', function () {
+    s.setAlgo($(this).find('option:selected').val())
+    updataSlider();
+  });
+  
  function updataSlider(){
     $('#slyder').slider( "option", "value", s.getStep()).slider( "option", "max", s.getLogSize());
   }
