@@ -20,7 +20,7 @@ var inRun = false;
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
 
-  var sorting = sortings[4]();
+  var sorting = sortings[0]();
   var forwardLoop =  reLoop(function(a){return a+1;});
   var backwardLoop =  reLoop(function(a){return a-1;});  
   
@@ -269,31 +269,66 @@ function insertionSort(){
     sLog.push(wraper(i, j, dataset.length, dataset.slice(0), function(a, b, p, data){
       updateBarChart(a, b, p, data, drawBarChart(data))
     }));
-      dataset = bufferDataset;
+    dataset = bufferDataset;
 
     return sLog;
   }
 },
+  function mergeSort(){
+    return function (compare){
+      var bufferDataset = dataset.slice(0);
+      var sLog = [];
+
+       sLog.push(wraper(1, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+
+      mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length);
+
+      sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data){
+        updateBarChart(a, b, p, data, drawBarChart(data))
+      }));
+
+      dataset = bufferDataset;
+
+      return sLog;
+  }
+},
+  function quickSort(){
+    return function(){
+       var sLog = [];
+       var bufferDataset = dataset.slice(0);
   
-function mergeSort(){
-  return function (compare){
-    var bufferDataset = dataset.slice(0);
-    var sLog = [];
-    
-     sLog.push(wraper(1, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-    
-    mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length);
-    
-    sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data){
-      updateBarChart(a, b, p, data, drawBarChart(data))
-    }));
-    
-    dataset = bufferDataset;
-    
-    return sLog;
-}
-}
+  sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+      
+      quickSortAlgo(sLog, 0, dataset.length);
+  
+      sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        
+      dataset = bufferDataset;
+
+      return sLog;
+      }
+    }
+  
 ]
+
+function quickSortAlgo(sLog, left, right){
+  if(left < right){
+    var bound = left;
+    
+    for(var i = left + 1; i < right; i++){
+       sLog.push(wraper(left, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+
+      if(dataset[i].d > dataset[left].d){
+        sLog.push(wraper(i, bound+1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb)}));
+        swap(i, ++bound);
+      }
+    }
+
+    swap(left, bound);
+    quickSortAlgo(sLog, left, bound);
+    quickSortAlgo(sLog, ++bound, right);
+  }
+}
 
 function mergeSortAlgo(data, arr, left, right){
   if(left == right)
