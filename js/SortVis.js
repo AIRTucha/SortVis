@@ -20,7 +20,7 @@ var inRun = false;
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
 
-  var sorting = sortings[0]();
+  var sorting = sortings[4]();
   var forwardLoop =  reLoop(function(a){return a+1;});
   var backwardLoop =  reLoop(function(a){return a-1;});  
   
@@ -273,8 +273,62 @@ function insertionSort(){
 
     return sLog;
   }
+},
+  
+function mergeSort(){
+  return function (compare){
+    var bufferDataset = dataset.slice(0);
+    var sLog = [];
+    
+     sLog.push(wraper(1, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+    
+    mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length);
+    
+    sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data){
+      updateBarChart(a, b, p, data, drawBarChart(data))
+    }));
+    
+    dataset = bufferDataset;
+    
+    return sLog;
+}
 }
 ]
+
+function mergeSortAlgo(data, arr, left, right){
+  if(left == right)
+    return;
+  else {
+    var midIndex = (left + right)/2;
+    mergeSortAlgo(data, arr, left, midIndex);
+    mergeSortAlgo(data, arr, midIndex + 1, right);
+    merge(data, arr, left, right);
+    
+    for(var i = left; i <= right; i++){
+      data[i] = arr[i];
+    }
+  }
+}
+  
+function merge(data, arr, left, right){
+  var midIndex = (left + right)/2;
+  var leftIndex = left;
+  var rightIndex = midIndex + 1;
+  var aIndex = left;
+  
+  while(leftIndex <= midIndex && rightIndex <= right)
+    if(data[leftIndex] >= data[rightIndex])
+      arr[aIndex++] = arr[leftIndex++];
+    else
+      arr[aIndex++] = arr[rightIndex++];
+  
+  while(leftIndex <= midIndex)
+    arr[aIndex++] = data[leftIndex++];
+  
+  while(rightIndex <= right)
+    arr[aIndex++] = data[rightIndex++]; 
+}
+
 function swap(a, b){
   var buffer = dataset[a];
   
