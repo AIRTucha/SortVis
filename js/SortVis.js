@@ -281,7 +281,7 @@ function insertionSort(){
 
        sLog.push(wraper(1, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
 
-      mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length-1);
+      mergeSortAlgo(sLog, dataset, dataset.slice(0), 0, dataset.length-1);
 
       sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data){
         updateBarChart(a, b, p, data, drawBarChart(data))
@@ -297,7 +297,7 @@ function insertionSort(){
        var sLog = [];
        var bufferDataset = dataset.slice(0);
   
-  sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+  sLog.push(wraper(0, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
       
       quickSortAlgo(sLog, 0, dataset.length);
   
@@ -307,9 +307,62 @@ function insertionSort(){
 
       return sLog;
       }
-    }
+  },
+  function heapSort(){
+    return function(){
+       var sLog = [];
+       var bufferDataset = dataset.slice(0);
   
+  sLog.push(wraper(0, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+      
+      
+      for(var i = Math.floor(dataset.length/2) - 1; i >= 0; i--)
+        repairTop(sLog, dataset, dataset.length-1, i, true);
+      
+      for(var i = dataset.length - 1; i > 0; i--){
+        sLog.push(wraper(0, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb)}));
+        swap(0, i);
+        sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        repairTop(sLog, dataset, i-1, 0, true);
+      }   
+  
+  
+      sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        
+      dataset = bufferDataset;
+
+      return sLog;
+      }
+  }
 ]
+
+function repairTop(sLog, data, bottom, topIndex, order){
+  var tmp = data[topIndex];
+  var tmpIndex = topIndex;
+  var succ = topIndex * 2 + 1;
+  
+  if(succ < bottom && data[succ].d > data[succ+1].d)
+    succ++;
+  
+  while(succ <= bottom && tmp.d > data[succ].d){
+     sLog.push(wraper(succ, topIndex, dataset.length, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+    sLog.push(wraper(succ, topIndex, dataset.length, data.slice(0), function(a, b, p, data, cb){drawEqual(a, b, p, data, cb)})); 
+    
+    data[topIndex] = data[succ];
+    
+    topIndex = succ;
+    succ = succ * 2 + 1;
+    
+    if(succ < bottom && data[succ].d > data[succ+1].d)
+      succ++;
+  }
+  
+  sLog.push(wraper(topIndex, tmpIndex, data.length, data.slice(0), function(a, b, p, data, cb){drawEqual(a, b, p, data, cb)}));
+  
+  data[topIndex] = tmp;
+  
+  sLog.push(wraper(tmpIndex, topIndex, data.length, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+}
 
 function quickSortAlgo(sLog, left, right){
   if(left < right){
@@ -333,17 +386,20 @@ sLog.push(wraper(left, bound, dataset.length, dataset.slice(0), function(a, b, p
   }
 }
 
-function mergeSortAlgo(data, arr, left, right){
-  if(left < right){
+function mergeSortAlgo(sLog, data, arr, left, right){
+  if(left != right){
     var midIndex = Math.floor((right + left)/2);
     
-    console.log("left : " + left + ' mid : ' + midIndex + ' right : ' + right);
-    
-    mergeSortAlgo(data, arr, left, midIndex);
-    mergeSortAlgo(data, arr, midIndex + 1, right);
+    mergeSortAlgo(sLog, data, arr, left, midIndex);
+    mergeSortAlgo(sLog, data, arr, midIndex + 1, right);
     merge(data, arr, left, right);
     
     for(var i = left; i <= right; i++){
+      var is = data.map(function(d){return arr[i].d == d.d ? i : false;}).filter(function(d){ return d != false});
+      
+      is.forEach(function(d){
+        sLog.push(wraper(left, right, d, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+      });
       data[i] = arr[i];
     }
   }
@@ -354,22 +410,18 @@ function merge(data, arr, left, right){
   var leftIndex = left;
   var rightIndex = midIndex + 1;
   var aIndex = left;
-  try{
+  
   while(leftIndex <= midIndex && rightIndex <= right)
     if(data[leftIndex].d >= data[rightIndex].d)
-      arr[aIndex++] = arr[leftIndex++];
+      arr[aIndex++] = data[leftIndex++];
     else
-      arr[aIndex++] = arr[rightIndex++];
+      arr[aIndex++] = data[rightIndex++];
   
   while(leftIndex <= midIndex)
     arr[aIndex++] = data[leftIndex++];
   
   while(rightIndex <= right)
-    arr[aIndex++] = data[rightIndex++]; 
-  } catch(e){
-    console.error(e);
-    console.log(rightIndex);
-  }
+    arr[aIndex++] = data[rightIndex++];  
 }
 
 function swap(a, b){
@@ -400,7 +452,7 @@ function stepAnimation(foo){
     
     step = foo(step);
     if(sortingLog.length > step && step >= 0)
-      sortingLog[step](function(a, b, p, data){drawBarChart(data)});
+      sortingLog[step](function(a, b, p, data){});
     else 
       step = 0 > step ?  0 : sortingLog.length - 1;
 
@@ -575,6 +627,22 @@ function drawMoveTo(a, b, p, data, callback){
         
         return iCur * (width / dataset.length);
       })				   
+      .each("end", function(d, i){
+        if(i == data.length - 1) 
+          callback(a, b, p, data);
+        });
+}
+
+function drawEqual(a, b, p, data, callback){
+    d3.select("#barChart").selectAll("rect")
+      .transition()
+      .duration(duration)
+      .attr("height", function(d, i) {
+          return scale(i == b ? data[a].d : d.d);
+      })
+      .attr("y", function(d, i) {
+          return height - scale(i == b ? data[a].d : d.d);
+      })
       .each("end", function(d, i){
         if(i == data.length - 1) 
           callback(a, b, p, data);

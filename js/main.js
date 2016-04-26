@@ -67,7 +67,10 @@ require('jquery-ui');
       }
    });
   
-  $('#speed').on('change', function () { s.setDuration(this.value)});
+  $('#speed').on('change', function () {
+    s.setDuration(500-this.value)
+    $('#speed_n').text(500-this.value + 'mc');
+  });
   $('#sizeSelector').on('change', function () { s.setSize($(this).find('option:selected').val())});
   
   $('#algo').on('change', function () {
