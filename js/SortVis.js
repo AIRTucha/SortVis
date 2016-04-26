@@ -164,32 +164,32 @@ var sortings = [
   }
 },
   function selectionSort(){
-  return function(compare){
-    var sLog = [];
-    var bufferDataset = dataset.slice(0);
+    return function(compare){
+      var sLog = [];
+      var bufferDataset = dataset.slice(0);
 
-    sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-    
-    for(var i = 0; i < dataset.length - 1; i++){
-      var p = i;
-      sLog.push(wraper(i, j, p, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-      for(var j = i+1; j < dataset.length; j++){ 
-        if(compare(dataset[j].d, dataset[p].d)){
-          p = j;
-        }
+      sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+
+      for(var i = 0; i < dataset.length - 1; i++){
+        var p = i;
         sLog.push(wraper(i, j, p, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        for(var j = i+1; j < dataset.length; j++){ 
+          if(!compare(dataset[j].d, dataset[p].d)){
+            p = j;
+          }
+          sLog.push(wraper(i, j, p, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        }
+        if(p != i){
+          sLog.push(wraper(p, i, p, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb);}));
+          swap(p, i);
+        }
       }
-      if(p != i){
-        sLog.push(wraper(p, i, p, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb);}));
-        swap(p, i);
-      }
+
+      sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+
+      dataset = bufferDataset;
+      return sLog;
     }
-    
-    sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-    
-    dataset = bufferDataset;
-    return sLog;
-  }
 },
 
 
@@ -281,7 +281,7 @@ function insertionSort(){
 
        sLog.push(wraper(1, 1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
 
-      mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length);
+      mergeSortAlgo(dataset, dataset.slice(0), 0, dataset.length-1);
 
       sLog.push(wraper(1, 2, dataset.length, dataset.slice(0), function(a, b, p, data){
         updateBarChart(a, b, p, data, drawBarChart(data))
@@ -316,7 +316,7 @@ function quickSortAlgo(sLog, left, right){
     var bound = left;
     
     for(var i = left + 1; i < right; i++){
-       sLog.push(wraper(left, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+       sLog.push(wraper(i, bound+1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
 
       if(dataset[i].d > dataset[left].d){
         sLog.push(wraper(i, bound+1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb)}));
@@ -324,17 +324,21 @@ function quickSortAlgo(sLog, left, right){
       }
     }
 
+sLog.push(wraper(left, bound, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+sLog.push(wraper(left, bound, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb)}));
     swap(left, bound);
+    
     quickSortAlgo(sLog, left, bound);
     quickSortAlgo(sLog, ++bound, right);
   }
 }
 
 function mergeSortAlgo(data, arr, left, right){
-  if(left == right)
-    return;
-  else {
-    var midIndex = (left + right)/2;
+  if(left < right){
+    var midIndex = Math.floor((right + left)/2);
+    
+    console.log("left : " + left + ' mid : ' + midIndex + ' right : ' + right);
+    
     mergeSortAlgo(data, arr, left, midIndex);
     mergeSortAlgo(data, arr, midIndex + 1, right);
     merge(data, arr, left, right);
@@ -346,13 +350,13 @@ function mergeSortAlgo(data, arr, left, right){
 }
   
 function merge(data, arr, left, right){
-  var midIndex = (left + right)/2;
+  var midIndex = Math.floor((left + right)/2);
   var leftIndex = left;
   var rightIndex = midIndex + 1;
   var aIndex = left;
-  
+  try{
   while(leftIndex <= midIndex && rightIndex <= right)
-    if(data[leftIndex] >= data[rightIndex])
+    if(data[leftIndex].d >= data[rightIndex].d)
       arr[aIndex++] = arr[leftIndex++];
     else
       arr[aIndex++] = arr[rightIndex++];
@@ -362,6 +366,10 @@ function merge(data, arr, left, right){
   
   while(rightIndex <= right)
     arr[aIndex++] = data[rightIndex++]; 
+  } catch(e){
+    console.error(e);
+    console.log(rightIndex);
+  }
 }
 
 function swap(a, b){
