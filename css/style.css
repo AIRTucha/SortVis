@@ -234,3 +234,13 @@ select {
     cursor:pointer;
 }
 
+.savonia {
+  position: fixed; 
+  bottom: 0;
+  right: 0; 
+  border: 0; 
+  width: 20%;
+  padding: 2%;
+  z-index: -10;
+}
+
