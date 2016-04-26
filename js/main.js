@@ -3,7 +3,6 @@ var buttons = require('./buttons')
 var page = require('./page');
 var $ = require('jquery');
 
-
 //trun on jq-ui
 require('jquery-ui');
 
@@ -99,7 +98,7 @@ require('jquery-ui');
    
     $('#slyder').slider( "option", "value", steps).slider( "option", "max", logSize);
    
-    if(steps <= 0 || steps >= logSize)
+   if(s.getRun() == 0)
       b.setReset();
   }
   
