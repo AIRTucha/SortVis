@@ -1,5 +1,6 @@
 var SortVis = require('./SortVis');
 var buttons = require('./buttons')
+var page = require('./page');
 var $ = require('jquery');
 
 
@@ -7,8 +8,6 @@ var $ = require('jquery');
 require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
-  setLayout();
-  createAbout();
   var s = new SortVis(20, 
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
@@ -23,39 +22,47 @@ require('jquery-ui');
    var step = 0;
  
 
-  var b = buttons(window.innerHeight*0.04, '#buttons',
+  var b = buttons(
+    window.innerHeight*0.04, '#buttons',
+    
      function(obj){
-      s.backwardAnimation(function(){
-        updataSlider();
+      if(s.getRun() == 0)
         obj.setStop();
-      });
+    
+      s.backwardAnimation(function(){ updataSlider(); });
      },
      function(){
-       s.backwardStep(function(){
-       updataSlider(); 
-       });
+       b.setReset();
+       updataSlider();
+       s.backwardStep();
+
      },
      function(){
-        if(s.ifRun())
+        if(s.getRun() != 0){
           s.stop();
-        else
+          b.setReset();
+        }
+        else{
           s.reset();
+          b.setStop();
+        }
     
         updataSlider();
      },
      function(){
-       s.forwardStep(function(){
        updataSlider();
-       });
+       b.setReset();
+       s.forwardStep();
      },
      function(obj){
-       s.forwardAnimation(function(){
-         updataSlider();
-         obj.setStop();
-       });
-     });
+      if(s.getRun() == 0)
+        obj.setStop();
+    
+      s.forwardAnimation(function(){updataSlider();});
+     }
+  );
   
-   $('#slyder').slider({
+  $('#slyder').slider({
       animate: "fast",
       range : "min",
       min : 0,
@@ -65,60 +72,42 @@ require('jquery-ui');
         s.intervalAnimation(ui.value);
         b.setReset();
       }
-   });
+  });
   
   $('#speed').on('change', function () {
     s.setDuration(500-this.value)
     $('#speed_n').text(500-this.value + 'mc');
   });
-  $('#sizeSelector').on('change', function () { s.setSize($(this).find('option:selected').val())});
   
-  $('#algo').on('change', function () {
-    s.setAlgo($(this).find('option:selected').val())
+  $('#sizeSelector').on('change', function () { 
+    s.setSize($(this).find('option:selected').val())
+    b.setReset();
     updataSlider();
   });
   
-  
+  $('#algo').on('change', function () {
+    s.setAlgo($(this).find('option:selected').val())
+    b.setReset();
+    updataSlider();
+  });
   
   $('.savonia').click(function(){$(".about").fadeIn(500)});
   
-    function createAbout(){
-    $('body').append('<div class = "about"><div class = "about_content"></div><div class = "about_exit"></div></div>');
-    
-    $('.about_content').append('<h1>About</h1><br/>' + 
-                       '<p>The visualisation is created by <a target = "_blank" href = "https://github.com/AIRTucha">Alexey Tukalo</a> for Advanced Algorithms and Data Structures course at <a target = "_blank" href = "http://portal.savonia.fi/amk/">Savonia University of Applied Sciences</a>.' +
-                       '<p>The visualisation represents sevent the most common sorting algorithms and gives user an opportunity to brows thought them in a different way.</p>' +
-                      '<p>You are welcome to fork and improve the framework on <a target = "_blank" href = "https://github.com/AIRTucha/SortVis">GitHub</a>.</p>');
-      
-      $('a').css({'color' : '#AA0077'});
-    
-      $(".about_exit").click(function(){ $(".about").fadeOut(500)});
-      $(".about").hide();
-    
-  }
- 
-  
  function updataSlider(){
-    $('#slyder').slider( "option", "value", s.getStep()).slider( "option", "max", s.getLogSize());
+    var steps = s.getStep();
+    var logSize = s.getLogSize();
+   
+    $('#slyder').slider( "option", "value", steps).slider( "option", "max", logSize);
+   
+    if(steps <= 0 || steps >= logSize)
+      b.setReset();
   }
   
-  function setLayout(){
-    if(innerHeight*1.3 < innerWidth){
-      $("#buttons").removeClass().addClass('uk-width-1-4');
-      $("#algo").removeClass().addClass('uk-width-1-4');
-      $("#sp").removeClass().addClass('uk-width-1-4');
-      $("#size").removeClass().addClass('uk-width-1-4')
-    } else{
-      $("#buttons").removeClass().addClass('uk-width-1-2');
-      $("#algo").removeClass().addClass('uk-width-1-2');
-      $("#sp").removeClass().addClass('uk-width-1-2');
-      $("#size").removeClass().addClass('uk-width-1-2')
-    }
-  }
-  
+  page.setLayout();
+  page.createAbout();
   window.onresize = function(){
     s.resize($('#main').width() * 0.99, $(window).height() * 0.85)
-    setLayout();
+    page.setLayout();
   }
 }
 })(window);

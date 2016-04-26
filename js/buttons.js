@@ -15,6 +15,8 @@ function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goF
   };
   
   obj.setReset = function(){
+    d3.select('#forwardGoButton').attr('stroke','#AAAAAA');
+    d3.select('#backGoButton').attr('stroke','#AAAAAA');
     resetButton(size, obj, stopReset);
   };
   
@@ -68,12 +70,10 @@ function goBackButton(size, obj, callback){
     .attr("stroke-width", size/10)
     .attr("fill", "#FFFFFF")
     .on('click', function(){
+        callback(obj);
       d3.select('#backGoButton').attr('stroke','#AA0077');
-      callback(obj);
-    })
-    .on("mouseout", function(){
-      d3.select('#backGoButton').attr('stroke','#AAAAAA');
-    });;
+      d3.select('#forwardGoButton').attr('stroke','#AAAAAA');
+    });
 }
 
 function stepBackButton(size, obj, callback){
@@ -279,10 +279,7 @@ function goForwardButton(size, obj, callback){
     .on('click', function(){
       callback(obj);
       d3.select('#forwardGoButton').attr('stroke','#AA0077');
-      
-    })
-    .on("mouseout", function(){
-      d3.select('#forwardGoButton').attr('stroke','#AAAAAA');
+      d3.select('#backGoButton').attr('stroke','#AAAAAA');
     });
 }
 
