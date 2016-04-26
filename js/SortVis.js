@@ -191,9 +191,6 @@ var sortings = [
       return sLog;
     }
 },
-
-
-
 function cocktailSort(){
   return function(compare){
     var sLog = [];
@@ -237,7 +234,6 @@ function cocktailSort(){
     
   }
 },
-
 function insertionSort(){
   return function (compare){
   var sLog = [];
@@ -320,6 +316,7 @@ function insertionSort(){
         repairTop(sLog, dataset, dataset.length-1, i, true);
       
       for(var i = dataset.length - 1; i > 0; i--){
+        sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
         sLog.push(wraper(0, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, p, data, cb)}));
         swap(0, i);
         sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
@@ -338,7 +335,6 @@ function insertionSort(){
 
 function repairTop(sLog, data, bottom, topIndex, order){
   var tmp = data[topIndex];
-  var tmpIndex = topIndex;
   var succ = topIndex * 2 + 1;
   
   if(succ < bottom && data[succ].d > data[succ+1].d)
@@ -357,11 +353,11 @@ function repairTop(sLog, data, bottom, topIndex, order){
       succ++;
   }
   
-  sLog.push(wraper(topIndex, tmpIndex, data.length, data.slice(0), function(a, b, p, data, cb){drawEqual(a, b, p, data, cb)}));
+  
+sLog.push(wraper(data.length, topIndex, topIndex, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));  
+  sLog.push(wraper(tmp, topIndex, data.length, data.slice(0), function(a, b, p, data, cb){drawSet(tmp, b, p, data, cb)}));
   
   data[topIndex] = tmp;
-  
-  sLog.push(wraper(tmpIndex, topIndex, data.length, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
 }
 
 function quickSortAlgo(sLog, left, right){
@@ -642,6 +638,22 @@ function drawEqual(a, b, p, data, callback){
       })
       .attr("y", function(d, i) {
           return height - scale(i == b ? data[a].d : d.d);
+      })
+      .each("end", function(d, i){
+        if(i == data.length - 1) 
+          callback(a, b, p, data);
+        });
+}
+
+function drawSet(a, b, p, data, callback){
+    d3.select("#barChart").selectAll("rect")
+      .transition()
+      .duration(duration)
+      .attr("height", function(d, i) {
+          return scale(i == b ? a.d : d.d);
+      })
+      .attr("y", function(d, i) {
+          return height - scale(i == b ? a.d : d.d);
       })
       .each("end", function(d, i){
         if(i == data.length - 1) 
