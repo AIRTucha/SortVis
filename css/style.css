@@ -242,5 +242,39 @@ select {
   width: 20%;
   padding: 2%;
   z-index: -10;
+  cursor: pointer;
+}
+.about {
+  z-index: 11;
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.8)
+}
+.about p {
+  color: white;
+}
+.about h1 {
+  color: white;
+}
+.about_content {
+  font-size: 2vh;
+  z-index: 13;
+  top : 20%;
+  width: 50%;
+  left: 25%; 
+  position: absolute; 
+  padding: 1%;
+}
+.about_exit {
+  z-index: 12;
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
