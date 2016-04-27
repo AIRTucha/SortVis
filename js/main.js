@@ -20,19 +20,21 @@ require('jquery-ui');
 
   var b = buttons(
     window.innerHeight*0.04, '#buttons',
-    
+    //go backward
      function(obj){
       if(s.getRun() == 0)
         obj.setStop();
     
       s.backwardAnimation(function(){ updataSlider(); });
      },
+    //step backward
      function(){
        b.setReset();
        updataSlider();
        s.backwardStep();
 
      },
+    //stop or reset
      function(){
         if(s.getRun() != 0){
           s.stop();
@@ -45,11 +47,13 @@ require('jquery-ui');
     
         updataSlider();
      },
+    //step forward
      function(){
        updataSlider();
        b.setReset();
        s.forwardStep();
      },
+    //go forward
      function(obj){
       if(s.getRun() == 0)
         obj.setStop();
@@ -58,6 +62,7 @@ require('jquery-ui');
      }
   );
   
+  // create jq-ui slider for visualisation stage
   $('#slyder').slider({
       animate: "fast",
       range : "min",
@@ -70,6 +75,7 @@ require('jquery-ui');
       }
   });
   
+  //attache event handlers for GUI
   $('#speed').on('change', function () {
     s.setDuration(500-this.value)
     $('#speed_n').text(500-this.value + 'mc');
@@ -89,6 +95,9 @@ require('jquery-ui');
   
   $('.savonia').click(function(){$(".about").fadeIn(500)});
   
+  /*
+  * Update status bar for the visualisation
+  */
  function updataSlider(){
     var steps = s.getStep();
     var logSize = s.getLogSize();
@@ -104,8 +113,10 @@ require('jquery-ui');
   
   page.setLayout();
   page.createAbout();
+  
   window.onresize = function(){
     s.resize($('#main').width() * 0.99, $(window).height() * 0.85)
+    b.reDraw(window.innerHeight*0.04);
     page.setLayout();
   }
 }

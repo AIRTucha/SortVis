@@ -16,7 +16,15 @@ var firstColor = "#AA0077";
 var secondColor = "#DD00AA";
 
 var inRun = 0;
-
+/*
+* Constract bar chart
+* @param - size of an array
+* @param - width
+* @param - hieght
+* @param - duration of the animation 
+* @param - color settins
+* ...
+*/
 function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mColor){
   var obj = {};
 
@@ -40,50 +48,75 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
                    dataset.reduce( function(a, b) {return a.d < b.d ? a : b;}).d,
                    dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}).d
                   );
-  
+  /*
+  * Starts forward animation
+  * @param - function executed every step
+  */
   obj.forwardAnimation = function(callback){
     inRun = 1;
     reLoop(callback);
   };
-  
+  /*
+  * Starts backward animation
+  * @param - function executed every step
+  */
   obj.backwardAnimation = function(callback){
     inRun = -1;
     reLoop(callback);
   };
-  
+  /*
+  * Jump to certain step in animation process
+  */
   obj.intervalAnimation = function(end){
     inRun = 0;
     step = end; 
     sortingLog[step](function(data){drawBarChart(data);});
   };
-  
+  /*
+  * Execute one step anymation to specified direction
+  */
   obj.forwardStep = stepAnimation(function(a){ return a+1; });
   obj.backwardStep = stepAnimation(function(a){ return a-1; });
-
+  /*
+  * @return stage of current animation process
+  */
   obj.getStep = function(){
     return step;
   };
-  
+  /*
+  * Set stage of current animation process
+  * @param - step number
+  */
   obj.setStep = function(s){
     step = s;
   };
-  
+  /*
+  * Set visualisation in run forward state
+  */
   obj.forward = function(){
     inRun = 1;
   }
-  
+  /*
+  * Set visualisation in stop state
+  */
   obj.stop = function(){
     inRun = 0;
   }
-  
+  /*
+  * Set visualisation in run back state
+  */
   obj.back = function(){
     inRun = -1;
   }
-  
+  /*
+  * @return inRun state
+  */
   obj.getRun = function(){
     return inRun;
   }
-  
+  /*
+  * Regenerate dataset
+  */
   obj.reset = function(){
     dataset = randomArray(size, mainColor);
     scale = getScale(height, 
@@ -94,21 +127,33 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     resetChart(dataset);
     step = 0;
   }
-  
+  /*
+  * Set duration of every animation step
+  * @param - duratuin in ms
+  */
   obj.setDuration = function(v){
     duration = v;
   }
-  
+  /*
+  * Set array size and regenerate the dataset
+  * @param - desirable size of the dataset
+  */
   obj.setSize = function(v){
     size = v;
     inRun = 0;
     obj.reset();
   }
-  
+  /*
+  * @return index of the last function in animation query
+  */
   obj.getLogSize = function(){
     return sortingLog.length - 1;
   }
-  
+  /*
+  * Redraw the chart in according to new screen size
+  * @param - width
+  * @param - hieght
+  */
   obj.resize = function(w, h) {
     width = w;
     height = h;
@@ -128,7 +173,10 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     
     drawBarChart(dataset);
   }
-  
+  /*
+  * Set algorithm from array in according with the index
+  * @param an index of algorithm
+  */
   obj.setAlgo = function (v){
     sorting = sortings[v]();
     obj.intervalAnimation(0);
@@ -136,11 +184,15 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     resetChart(dataset);
   }
   
+  //start the animation which draw the barchart
   startBarChart(dataset);
   
   return obj;
 }
 
+/*
+* Array of sorting algorithms
+*/
 var sortings = [
   function bubbleSort(){
   return function(compare){
@@ -276,7 +328,7 @@ function insertionSort(){
 
     return sLog;
   }
-},
+ },
   function mergeSort(){
     return function (compare){
       var bufferDataset = dataset.slice(0);
@@ -294,7 +346,7 @@ function insertionSort(){
 
       return sLog;
   }
-},
+ },
   function quickSort(){
     return function(){
        var sLog = [];
@@ -320,14 +372,14 @@ function insertionSort(){
       
       
       for(var i = Math.floor(dataset.length/2) - 1; i >= 0; i--)
-        repairTop(sLog, dataset, dataset.length-1, i, true);
+        repairTop(sLog, dataset, dataset.length-1, i);
       
       for(var i = dataset.length - 1; i > 0; i--){
         sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
         sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
         swap(0, i);
         sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-        repairTop(sLog, dataset, i-1, 0, true);
+        repairTop(sLog, dataset, i-1, 0);
       }   
   
   
@@ -339,8 +391,14 @@ function insertionSort(){
       }
   }
 ]
-
-function repairTop(sLog, data, bottom, topIndex, order){
+/*
+* Support function for Heap Sort
+* @param - Query of animation functions
+* @param - dataset
+* @param - first boundary
+* @param - last boundary
+*/
+function repairTop(sLog, data, bottom, topIndex){
   var tmp = data[topIndex];
   var succ = topIndex * 2 + 1;
   
@@ -366,7 +424,12 @@ sLog.push(wraper(data.length, topIndex, topIndex, data.slice(0), function(a, b, 
   
   data[topIndex] = tmp;
 }
-
+/*
+* Quick Sorting Algorithm
+* @param - Query of animation functions
+* @param - left boundary
+* @param - right boundary
+*/
 function quickSortAlgo(sLog, left, right){
   if(left < right){
     var bound = left;
@@ -388,14 +451,37 @@ sLog.push(wraper(left, bound, dataset.length, dataset.slice(0), function(a, b, p
     quickSortAlgo(sLog, ++bound, right);
   }
 }
-
+/*
+* Merge Sorting Algorithm
+* @param - Query of animation functions
+* @param - particular dataset
+* @param - help dataset
+* @param - left boundary
+* @param - right boundary
+*/
 function mergeSortAlgo(sLog, data, arr, left, right){
   if(left != right){
     var midIndex = Math.floor((right + left)/2);
     
     mergeSortAlgo(sLog, data, arr, left, midIndex);
     mergeSortAlgo(sLog, data, arr, midIndex + 1, right);
-    merge(data, arr, left, right);
+    
+    midIndex = Math.floor((left + right)/2);
+    var leftIndex = left;
+    var rightIndex = midIndex + 1;
+    var aIndex = left;
+
+    while(leftIndex <= midIndex && rightIndex <= right)
+      if(data[leftIndex].d >= data[rightIndex].d)
+        arr[aIndex++] = data[leftIndex++];
+      else
+        arr[aIndex++] = data[rightIndex++];
+
+    while(leftIndex <= midIndex)
+      arr[aIndex++] = data[leftIndex++];
+
+    while(rightIndex <= right)
+      arr[aIndex++] = data[rightIndex++];  
     
     for(var i = left; i <= right; i++){
        sLog.push(wraper(left, right, i, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
@@ -404,25 +490,7 @@ function mergeSortAlgo(sLog, data, arr, left, right){
     }
   }
 }
-  
-function merge(data, arr, left, right){
-  var midIndex = Math.floor((left + right)/2);
-  var leftIndex = left;
-  var rightIndex = midIndex + 1;
-  var aIndex = left;
-  
-  while(leftIndex <= midIndex && rightIndex <= right)
-    if(data[leftIndex].d >= data[rightIndex].d)
-      arr[aIndex++] = data[leftIndex++];
-    else
-      arr[aIndex++] = data[rightIndex++];
-  
-  while(leftIndex <= midIndex)
-    arr[aIndex++] = data[leftIndex++];
-  
-  while(rightIndex <= right)
-    arr[aIndex++] = data[rightIndex++];  
-}
+
 /*
 * swap dataset values
 * @param - first index
@@ -519,7 +587,8 @@ function resetChart(data){
   d3.select("#barChart").selectAll("rect")
     .transition()
     .duration(duration)
-    .attr('x', 0).each('end',function(){
+    .attr('y', height)
+    .each('end',function(){
         startBarChart(data);
   });
 }
@@ -535,10 +604,10 @@ function startBarChart(data){
     .enter()
     .append("rect")
     .attr("class","element")
-    .attr("x", 0)
-    .attr("y", function(d, i) {
-        return height - scale(d.d);
-    })				   
+    .attr("x", function(d, i) {
+        return i * (width / data.length);
+    })
+    .attr("y", height)				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
         return scale(d.d);
@@ -548,9 +617,10 @@ function startBarChart(data){
     })
     .transition()
     .duration(duration)
-    .attr("x", function(d, i) {
-        return i * (width / data.length);
+      .attr("y", function(d, i) {
+        return height - scale(d.d);
     });
+;
 }
 /*
 * quick way to draw the bar chart
