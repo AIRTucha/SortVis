@@ -52,8 +52,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   };
   
   obj.intervalAnimation = function(end){
-    step = end;
-    inRun = 0; 
+    inRun = 0;
+    step = end; 
     sortingLog[step](function(data){drawBarChart(data);});
   };
   
@@ -80,7 +80,6 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     inRun = -1;
   }
   
-  
   obj.getRun = function(){
     return inRun;
   }
@@ -95,6 +94,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
     resetChart(dataset);
     step = 0;
   }
+  
   obj.setDuration = function(v){
     duration = v;
   }
@@ -106,7 +106,7 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   }
   
   obj.getLogSize = function(){
-    return sortingLog.length - 2;
+    return sortingLog.length - 1;
   }
   
   obj.resize = function(w, h) {
@@ -398,11 +398,8 @@ function mergeSortAlgo(sLog, data, arr, left, right){
     merge(data, arr, left, right);
     
     for(var i = left; i <= right; i++){
-      var is = data.map(function(d){return arr[i].d == d.d ? i : false;}).filter(function(d){ return d != false});
-      
-      is.forEach(function(d){
-        sLog.push(wraper(left, right, d, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-      });
+       sLog.push(wraper(left, right, i, data.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+       sLog.push(wraper(arr[i], i, i, data.slice(0), function(a, b, p, data, cb){drawSet(a, b, p, data, cb)}));
       data[i] = arr[i];
     }
   }

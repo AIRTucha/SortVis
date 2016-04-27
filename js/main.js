@@ -17,9 +17,6 @@ require('jquery-ui');
                       "#00BB00", 
                       "#BB0000", 
                       "#AAAAAA");
-  
-   var step = 0;
- 
 
   var b = buttons(
     window.innerHeight*0.04, '#buttons',
