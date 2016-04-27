@@ -7,7 +7,7 @@ var $ = require('jquery');
 require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
-  var s = new SortVis(20, 
+  var s = new SortVis(50, 
                       function(a, b) {return a < b;},
                       $('#main').width() * 0.99,
                       $(window).height() * 0.85,

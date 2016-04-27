@@ -209,6 +209,7 @@ var sortings = [
         {
           sLog.push(wraper(j, j+1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
           swap(j, j+1);
+          sLog.push(wraper(j+1, j, dataset.length, dataset.slice(0), function(a, b, p,  data, cb){updateBarChart(a, b, p, data, cb)}));
         }
       }
     
@@ -265,6 +266,7 @@ function cocktailSort(){
         if(compare(dataset[p1].d, dataset[p2].d)){
           sLog.push(wraper(p1, p2, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
           swap(p1, p2);
+          sLog.push(wraper(p2, p1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
           swaped = true;
         }
       }
@@ -274,6 +276,7 @@ function cocktailSort(){
         if(!compare(dataset[j].d, dataset[j-1].d)) {
           sLog.push(wraper(j, j-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
           swap(j, j-1);
+          sLog.push(wraper(j-1, j, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
           swaped = true;
         }
       }
