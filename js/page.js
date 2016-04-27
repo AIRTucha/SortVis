@@ -25,7 +25,7 @@ module.exports = {
     
     $('.about_content').append('<h1>About</h1><br/>' + 
                        '<p>The visualisation is created by <a target = "_blank" href = "https://github.com/AIRTucha">Alexey Tukalo</a> for Advanced Algorithms and Data Structures course at <a target = "_blank" href = "http://portal.savonia.fi/amk/">Savonia University of Applied Sciences</a>.' +
-                       '<p>The visualisation represents seventh the most common sorting algorithms and gives user an opportunity to browse thought them in a different way.</p>' +
+                       '<p>The visualisation represents seven the most common sorting algorithms and gives user an opportunity to browse thought them in a different way.</p>' +
                       '<p>You are welcome to fork and improve the framework on <a target = "_blank" href = "https://github.com/AIRTucha/SortVis">GitHub</a>.</p>');
       
       $('a').css({'color' : '#AA0077'});
