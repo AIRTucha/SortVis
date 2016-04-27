@@ -95,11 +95,14 @@ require('jquery-ui');
  function updataSlider(){
     var steps = s.getStep();
     var logSize = s.getLogSize();
+    var inRun = s.getRun()
    
     $('#slyder').slider( "option", "value", steps).slider( "option", "max", logSize);
    
-   if(s.getRun() == 0)
+   if((inRun == -1 && steps <=0) || (inRun == 1 && steps >= logSize) || inRun == 0){
       b.setReset();
+      s.stop();
+   }
   }
   
   page.setLayout();
