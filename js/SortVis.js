@@ -378,10 +378,10 @@ function insertionSort(){
         repairTop(sLog, dataset, dataset.length-1, i);
       
       for(var i = dataset.length - 1; i > 0; i--){
-        sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
-        sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
+        sLog.push(wraper(0, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        sLog.push(wraper(0, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){drawSwap(a, b, data, cb)}));
         swap(0, i);
-        sLog.push(wraper(0, i-1, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
+        sLog.push(wraper(0, i, dataset.length, dataset.slice(0), function(a, b, p, data, cb){updateBarChart(a, b, p, data, cb)}));
         repairTop(sLog, dataset, i-1, 0);
       }   
   
