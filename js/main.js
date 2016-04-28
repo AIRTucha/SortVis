@@ -116,7 +116,7 @@ require('jquery-ui');
   
   window.onresize = function(){
     s.resize($('#main').width() * 0.99, $(window).height() * 0.85)
-    b.reDraw(window.innerHeight*0.04);
+    b.reDraw(window.innerHeight*0.04, s.getRun());
     page.setLayout();
   }
 }

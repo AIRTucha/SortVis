@@ -20,19 +20,37 @@ function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goF
     resetButton(size, obj, stopReset);
   };
   
-  obj.reDraw = function(size){
+  obj.reDraw = function(size, inRun){
       d3.select(container).selectAll('*').remove();
       d3.select(container)
             .append("svg")
             .attr("id", "menuButtons")
             .attr("width", size*7)
-            .attr("height", size*1.1);
+            .attr("height", size);
       size *=0.9;
       goBackButton(size, obj, goBack);
       stepBackButton(size, obj, stepBack);
       resetButton(size, obj, stopReset);
       stepForwardButton(size, obj, stepForward);
       goForwardButton(size, obj, goForward);
+	  
+	  obj.setStop = function(){
+        stopButton(size, obj, stopReset);
+      };
+	  
+	  switch(inRun){
+		  case -1 : {
+			  obj.setStop();
+			  d3.select('#backGoButton').attr('stroke','#AA0077');
+		  }
+			break;
+		  case 0 : obj.setReset();
+			break;
+		  case 1 : {
+			  obj.setStop();
+			  d3.select('#forwardGoButton').attr('stroke','#AA0077');
+		  }
+	  }
   }
   
   goBackButton(size, obj, goBack);
