@@ -38,6 +38,12 @@ function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goF
         stopButton(size, obj, stopReset);
       };
 	  
+	  obj.setReset = function(){
+       d3.select('#forwardGoButton').attr('stroke','#AAAAAA');
+       d3.select('#backGoButton').attr('stroke','#AAAAAA');
+       resetButton(size, obj, stopReset);
+      };
+	  
 	  switch(inRun){
 		  case -1 : {
 			  obj.setStop();
