@@ -10,11 +10,11 @@ var scale;
 var duration;
 var size;
 
-var step = 0;
 var mainColor = "#AAAAAA";
 var firstColor = "#AA0077";          
 var secondColor = "#DD00AA";
 var inRun = 0;
+var step = 0;
 
 /*
 * Constract bar chart
@@ -45,8 +45,8 @@ function SortVis(size, comp, w, h, du, iColor, jColor, trueColor, falseColor, mC
   
   scale = getScale(
     height, 
-    dataset.reduce( function(a, b) {return a.d < b.d ? a : b;}).d,
-    dataset.reduce( function(a, b) {return a.d > b.d ? a : b;}).d
+    dataset.reduce( function(a, b) {return a.d < b.d ? a : b;} ).d,
+    dataset.reduce( function(a, b) {return a.d > b.d ? a : b;} ).d
   );
   /*
   * Starts forward animation
@@ -204,8 +204,7 @@ var sortings = [
     for(var i = 0; i < dataset.length-1; i++)
       for(var j = 0; j < dataset.length-1-i; j++){ 
        sLog.push(wraper(j, j+1, dataset.length, dataset.slice(0), updateBarChart));
-        if(compare(dataset[j].d, dataset[j+1].d))
-        {
+        if(compare(dataset[j].d, dataset[j+1].d)){
           sLog.push(wraper(j, j+1, dataset.length, dataset.slice(0), drawSwap));
           swap(j, j+1);
           sLog.push(wraper(j+1, j, dataset.length, dataset.slice(0), updateBarChart));
@@ -229,9 +228,8 @@ var sortings = [
         var p = i;
         sLog.push(wraper(i, j, p, dataset.slice(0), updateBarChart));
         for(var j = i+1; j < dataset.length; j++){ 
-          if(!compare(dataset[j].d, dataset[p].d)){
+          if(!compare(dataset[j].d, dataset[p].d))
             p = j;
-          }
           sLog.push(wraper(i, j, p, dataset.slice(0), updateBarChart));
         }
         if(p != i){
@@ -344,7 +342,7 @@ function insertionSort(){
       dataset = bufferDataset;
 
       return sLog;
-      }
+    }
   },
   function heapSort(){
     return function(){
@@ -441,14 +439,14 @@ function quickSortAlgo(sLog, left, right){
 function mergeSortAlgo(sLog, data, arr, left, right){
   if(left != right){
     var midIndex = Math.floor((right + left)/2);
+    var leftIndex = left;
+    var rightIndex = midIndex + 1;
+    var aIndex = left;
     
     mergeSortAlgo(sLog, data, arr, left, midIndex);
     mergeSortAlgo(sLog, data, arr, midIndex + 1, right);
     
     midIndex = Math.floor((left + right)/2);
-    var leftIndex = left;
-    var rightIndex = midIndex + 1;
-    var aIndex = left;
 
     while(leftIndex <= midIndex && rightIndex <= right)
       if(data[leftIndex].d >= data[rightIndex].d)
@@ -469,7 +467,6 @@ function mergeSortAlgo(sLog, data, arr, left, right){
     }
   }
 }
-
 /*
 * swap dataset values
 * @param - first index
@@ -563,8 +560,8 @@ function resetChart(data){
     .duration(duration)
     .attr('y', height)
     .each('end',function(){
-        startBarChart(data);
-  });
+      startBarChart(data);
+    });
 }
 /*
 * draw the bar chart with animation
@@ -578,12 +575,12 @@ function startBarChart(data){
     .append("rect")
     .attr("class","element")
     .attr("x", function(d, i) {
-        return i * (width / data.length);
+      return i * (width / data.length);
     })
     .attr("y", height)				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
-        return scale(d.d);
+      return scale(d.d);
     })
     .attr("fill", function(d, i) {
         return d.c;
@@ -606,21 +603,21 @@ function drawBarChart(data){
     .append("rect")
     .attr("class","element")
     .attr("x", function(d, i) {
-        return i * (width / data.length);
+      return i * (width / data.length);
     })
     .attr("y", function(d, i) {
-        return height - scale(d.d);
+      return height - scale(d.d);
     })				   
     .attr("width", (width / data.length)*0.9 )
     .attr("height", function(d) {
-        return scale(d.d);
+      return scale(d.d);
     })
     .attr("stroke", firstColor)
     .attr("stroke-width", function(d){
       return d.b;
     })
     .attr("fill", function(d, i) {
-        return d.c;
+      return d.c;
     });
 }
 /*
@@ -639,10 +636,10 @@ function updateBarChart(a, b, p, data, callback){
       .append("rect")
       .attr("class","element")
       .attr("x", function(d, i) {
-          return i * (width / data.length);
+        return i * (width / data.length);
       })
       .attr("y", function(d, i) {
-          return height - scale(d.d);
+        return height - scale(d.d);
       })				   
       .attr("width", (width / data.length)*0.9 )
       .attr("height", function(d) {
@@ -666,14 +663,14 @@ function updateBarChart(a, b, p, data, callback){
       })
       .attr("stroke", firstColor)
       .attr("stroke-width", function(d, i){
-          d.b = i == p ? (width / data.length)*0.1 : 0;
-          return d.b;
+        d.b = i == p ? (width / data.length)*0.1 : 0;
+        return d.b;
       })
       .each("end", function(d, i){
-          if(i == data.length-1)
-            try{
-              callback(data);
-            }catch(e){}
+        if(i == data.length-1)
+          try{
+            callback(data);
+          }catch(e){}
       });
 }
 /*
@@ -763,15 +760,15 @@ function drawSet(amount, index, p, data, callback){
     .transition()
     .duration(duration)
     .attr("height", function(d, i) {
-        return scale(i == index ? amount.d : d.d);
+      return scale(i == index ? amount.d : d.d);
     })
     .attr("y", function(d, i) {
-        return height - scale(i == index ? amount.d : d.d);
+      return height - scale(i == index ? amount.d : d.d);
     })
     .each("end", function(d, i){
       if(i == data.length - 1) 
         callback(data);
-      });
+    });
 }
 
 module.exports = SortVis;
