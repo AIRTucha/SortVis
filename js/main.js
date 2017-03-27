@@ -1,5 +1,5 @@
 var SortVis = require('./SortVis');
-var buttons = require('./buttons')
+var buttons = require('./buttons');
 var page = require('./page');
 var $ = require('jquery');
 
@@ -62,7 +62,7 @@ require('jquery-ui');
      }
   );
   
-  // create jq-ui slider for visualisation stage
+  //create jq-ui slider for visualisation stage
   $('#slyder').slider({
       animate: "fast",
       range : "min",

@@ -1,0 +1,30 @@
+{
+  "name": "sort-vis",
+  "version": "1.0.0",
+  "description": "Visualisation for sorting algorithms",
+  "main": "main.js",
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "jquery": "$"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexey Tukalo",
+  "license": "MIT",
+  "dependencies": {
+    "browserify": "^11.2.0",
+    "browserify-shim": "^3.8.14",
+    "d3": "3.*",
+    "jquery": "3.*",
+    "jquery-ui-dist": "1.*"
+  },
+  "browser":{
+    "jquery-ui": "./node_modules/jquery-ui-dist/jquery-ui.min.js",
+    "jquery": "./node_modules/jquery/dist/jquery.js"
+  }
+}

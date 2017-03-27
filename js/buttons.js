@@ -1,4 +1,4 @@
-var d3 = require('d3')
+var d3 = require('d3');
 
 function buttons(size, container, goBack, stepBack, stopReset, stepForward,  goForward){
   d3.select(container)
