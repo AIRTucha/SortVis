@@ -7,16 +7,18 @@ var $ = require('jquery');
 require('jquery-ui');
 
 (function(namespace) {window.onload = function(){
-  var s = new SortVis(50, 
-                      function(a, b) {return a < b;},
-                      $('#main').width() * 0.99,
-                      $(window).height() * 0.85,
-                      200,
-                      "#AA0077", 
-                      "#DD00AA", 
-                      "#00BB00", 
-                      "#BB0000", 
-                      "#AAAAAA");
+  var s = new SortVis(
+    50, 
+    function(a, b) {return a < b;},
+    $('#main').width() * 0.99,
+    $(window).height() * 0.85,
+    200,
+    "#AA0077", 
+    "#DD00AA", 
+    "#00BB00", 
+    "#BB0000", 
+    "#AAAAAA"
+  );
 
   var b = buttons(
     window.innerHeight*0.04, '#buttons',
@@ -24,7 +26,6 @@ require('jquery-ui');
      function(obj){
       if(s.getRun() == 0)
         obj.setStop();
-    
       s.backwardAnimation(function(){ updataSlider(); });
      },
     //step backward
@@ -57,8 +58,7 @@ require('jquery-ui');
      function(obj){
       if(s.getRun() == 0)
         obj.setStop();
-    
-      s.forwardAnimation(function(){updataSlider();});
+      s.forwardAnimation(function(){ updataSlider(); });
      }
   );
   
