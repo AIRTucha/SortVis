@@ -1,11 +1,98 @@
+@import "jquery-ui.min.css";
+
 body{
-  overflow: hidden;
+  font-family : 'Montserrat', sans-serif;
+  font-size : 2vh;
+  overflow-x: hidden;
 }
-
 input[type=range] {
-    width: 100%;
+  -webkit-appearance: none;
+  margin: 3px 0;
 }
-
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+  background: #f0f0f0;
+  border-radius: 2px;
+  border: 0px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 0, 0, 0);
+  height: 10px;
+  width: 7px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -3px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #fdfdfd;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+  background: #f0f0f0;
+  border-radius: 2px;
+  border: 0px solid #010101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 0, 0, 0);
+  height: 11px;
+  width: 7px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #e3e3e3;
+  border: 0px solid #010101;
+  border-radius: 4px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-fill-upper {
+  background: #f0f0f0;
+  border: 0px solid #010101;
+  border-radius: 4px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 0, 0, 0);
+  height: 11px;
+  width: 7px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+  height: 5px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #f0f0f0;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #fdfdfd;
+}
+.uk-width-1-2 {
+  padding: 1%;
+  margin: : 1%
+}
 .axisY path{
     fill:none;
 }
@@ -57,20 +144,13 @@ text{
 }
 
 .chartHorizontal{
-  position: absolute;
-  right: 0px;
-  height: 115vh;
-  width: 75%;
+  position: relative;
+  width: 99%;
 }
 
 .legendHorizontal{
-    position: fixed;
-    top: "10pt";
-    width: 23%;
-    height: 99%;
-    border-right-style: solid;
-    border-right-width: 1px;
-    border-right-color: gainsboro; 
+  position: relative;
+  width: 100%;
 }
 
 svg {
@@ -84,14 +164,14 @@ svg text {
 
 #legend rect{
     cursor: pointer; 
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
 }
 
-#element{
+.element{
     opacity: 0.7;
 }
 
-#element:hover{
+.element:hover{
     opacity: 1;
 }
 
@@ -102,25 +182,99 @@ svg text {
 .plot{
     opacity: 1;
 }
-
-
 
 .ui-slider .ui-slider-handle {
-    cursor: default;
-    height: 3vh;
-    width: 3vh;
+    cursor:grab;
+    height: 2vh;
+    width: 2vh;
     z-index: 2;
     border-radius: 0px;
 }
+
+.ui-slider-handle :hover {
+background-color: "#DD00AA";
+}
+
 .ui-slider-horizontal {
-      
     cursor: default;
     height: 1vh;
     z-index: 2;
     border-radius: 0px;
 }
+
 .ui-slider{
+  pointer-events :all;
   margin: 1vh;
   background : rgba(0, 0, 0, 0);
   border-color: rgba(255, 255, 255, 0.8);
 }
+
+.ui-corner-all{
+    border-style: solid;
+    border-width: 1px;
+    border-color: gainsboro; 
+}
+
+select {
+    font-family : 'Montserrat', sans-serif;
+    font-size : 2vh;
+    padding:3px;
+    margin: 0;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+    background: #f8f8f8;
+    color:#888;
+    border:none;
+    outline:none;
+    display: inline-block;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    cursor:pointer;
+}
+
+.savonia {
+  position: fixed; 
+  bottom: 0;
+  right: 0; 
+  border: 0; 
+  width: 20%;
+  padding: 2%;
+  z-index: -10;
+  cursor: pointer;
+}
+.about {
+  z-index: 11;
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.8)
+}
+.about p {
+  color: white;
+}
+.about h1 {
+  color: white;
+}
+.about_content {
+  font-size: 2vh;
+  z-index: 13;
+  top : 20%;
+  width: 50%;
+  left: 25%; 
+  position: absolute; 
+  padding: 1%;
+}
+.about_exit {
+  z-index: 12;
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
