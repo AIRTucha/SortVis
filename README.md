@@ -11,3 +11,5 @@ SVG based visualisation of sorting algorithms:
 * Heap sort
 
 DEMO: airtucha.github.io/SortVis
+
+Made by Alexey Tukalo for Savonia UAS Advanced Algorithms and Data Structures course work.
